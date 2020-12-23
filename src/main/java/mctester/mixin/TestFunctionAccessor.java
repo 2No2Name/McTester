@@ -20,6 +20,8 @@ public interface TestFunctionAccessor {
     void setRequired(boolean required);
     @Accessor("starter")
     void setStarter(Consumer<StartupParameter> starter);
+    @Accessor("tickLimit")
+    void setTickLimit(int tickLimit);
     @Accessor("duration")
     void setDuration(long duration);
     @Accessor("field_25306")
