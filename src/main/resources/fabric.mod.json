@@ -1,37 +1,33 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "mctester",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "MC Tester Mod",
   "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
-    "Me!"
+    "2No2Name"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/2No2Name",
+    "sources": "https://github.com/2No2Name"
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/mctester/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "mctester.MCTesterMod"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "mctester.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
-  },
-  "suggests": {
-    "another-mod": "*"
+    "minecraft": "*"
   }
 }
