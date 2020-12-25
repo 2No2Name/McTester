@@ -22,9 +22,8 @@ public class TestConfig {
     private BlockRotation rotation = BlockRotation.NONE;
     private Consumer<StartupParameter> starter;
 
-    private final Int2ObjectOpenHashMap<ArrayList<TestActions.GameTestAction>> actionsByTick = new Int2ObjectOpenHashMap<>();
-    private final ArrayList<TestActions.GameTestAction> repeatedActions = new ArrayList<>();
-
+    private final Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick = new Int2ObjectOpenHashMap<>();
+    private final ArrayList<Consumer<GameTest>> repeatedActions = new ArrayList<>();
 
 
     public TestConfig() {
@@ -46,20 +45,21 @@ public class TestConfig {
 
     public TestFunction build() {
         Consumer<StartupParameter> extendedStarter = (t) -> {
-            if (this.starter != null) {
-                this.starter.accept(t);
-            }
-
             //use a hack to schedule the Runnables/Consumers we want to run during the test.
             for (int tick : this.actionsByTick.keySet()) {
-                ArrayList<TestActions.GameTestAction> actions = this.actionsByTick.get(tick);
+                ArrayList<Consumer<GameTest>> actions = this.actionsByTick.get(tick);
                 if (actions != null && !actions.isEmpty()) {
-                    TestHelper.addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.run(e)), tick);
+                    TestHelper.addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
                 }
             }
-
+            //we have to add repeated actions to every single tick
             if (!repeatedActions.isEmpty()) {
-                TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.run(e)), 0, this.timeout + 1);
+                TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), 0, this.timeout + 1);
+            }
+
+
+            if (this.starter != null) {
+                this.starter.accept(t);
             }
         };
 
@@ -110,13 +110,13 @@ public class TestConfig {
         return this;
     }
 
-    public TestConfig addAction(TestActions.GameTestAction action, int tick) {
-        ArrayList<TestActions.GameTestAction> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));
+    public TestConfig addAction(int tick, Consumer<GameTest> action) {
+        ArrayList<Consumer<GameTest>> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));
         actions.add(action);
         return this;
     }
 
-    public TestConfig addRepeatedAction(TestActions.GameTestAction action) {
+    public TestConfig addRepeatedAction(Consumer<GameTest> action) {
         this.repeatedActions.add(action);
         return this;
     }
@@ -130,10 +130,10 @@ public class TestConfig {
         return this;
     }
 
-    public TestConfig addFailCondition(Function<GameTest, Boolean> failCondition) {
+    public TestConfig addFailCondition(Function<GameTest, Boolean> failCondition, String message) {
         this.repeatedActions.add(e -> {
             if (failCondition.apply(e)) {
-                e.fail(new Exception("Fail condition met!"));
+                e.fail(new Exception(message));
             }
         });
         return this;

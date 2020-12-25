@@ -1,6 +1,6 @@
 package mctester;
 
-import mctester.test.MyTests;
+import mctester.annotation.TestRegistryHelper;
 import net.fabricmc.api.ModInitializer;
 
 public class MCTesterMod implements ModInitializer {
@@ -10,7 +10,7 @@ public class MCTesterMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		MyTests.registerTests();
+		TestRegistryHelper.createTestsFromClass(MyTests.class);
 
 	}
 }

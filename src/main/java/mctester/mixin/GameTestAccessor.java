@@ -1,5 +1,6 @@
 package mctester.mixin;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.test.GameTest;
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,6 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GameTest.class)
 public interface GameTestAccessor {
+    @Accessor("field_21453")
+    Object2LongMap<Runnable> getField_21453();
     @Accessor("field_27805")
     StructureBlockBlockEntity getStructureBlockBlockEntity();
 }
