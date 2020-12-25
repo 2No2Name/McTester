@@ -71,9 +71,23 @@ public class GameTestUtil {
         BlockPos blockPos = gameTest.getPos();
         Vec3d pos2 = new Vec3d(x, y, z);
         //transform the position so the spawning works
-        Vec3d pos3 = Structure.transformAround(pos2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.method_29402(), blockPos);
-        entity.refreshPositionAfterTeleport(pos3.getX(), pos3.getY(), pos3.getZ());
-        //todo rotate entity, gameTest.method_29402()
+        BlockRotation blockRotation = gameTest.method_29402();
+        Vec3d pos3 = Structure.transformAround(pos2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, blockRotation, blockPos);
+        float yaw = entity.yaw;
+        switch (blockRotation) {
+            case NONE:
+                break;
+            case CLOCKWISE_90:
+                yaw = (entity.yaw + 90f) % 360;
+                break;
+            case CLOCKWISE_180:
+                yaw = (entity.yaw + 180f) % 360;
+                break;
+            case COUNTERCLOCKWISE_90:
+                yaw = (entity.yaw - 90f) % 360;
+                break;
+        }
+        entity.refreshPositionAndAngles(pos3.getX(), pos3.getY(), pos3.getZ(), yaw, entity.pitch);
         serverWorld.spawnEntity(entity);
     }
 
