@@ -14,10 +14,10 @@ import java.util.function.Function;
 public class TestConfig {
 
     private String batchId = "defaultbatch";
-    private String structurePath = "defaultpath";
+    private String structurePath = "";
     private String structureName;
     private long cooldown = 0; //time between loading the structure and starting the test
-    private int timeout = 100; //time after which the test automatically fails
+    private int timeout = 400; //time after which the test automatically fails
     private boolean required = true;
     private BlockRotation rotation = BlockRotation.NONE;
     private Consumer<StartupParameter> starter;
@@ -31,14 +31,18 @@ public class TestConfig {
     }
 
     public static TestConfig from(Test annotation) {
+        String structurePath = annotation.groupName();
+        if (!structurePath.equals("")) {
+            structurePath = structurePath + ".";
+        }
+        structurePath = structurePath + annotation.structureName();
+
         return new TestConfig()
                 .required(annotation.required())
                 .batchId(annotation.batchId())
                 .structurePlaceCooldown(annotation.cooldown())
-                //using structureName as path, not sure if it is intended like that, but structurePath is placed as
-                //name in the structure block automatically
-                .structurePath(annotation.structureName())
-                .structureName(annotation.structureName())
+//                .structurePath(structurePath) //todo for some reason using path as name is better too
+                .structureName(structurePath)
                 .timeout(annotation.timeout())
                 .rotation(annotation.rotation());
     }
@@ -63,8 +67,8 @@ public class TestConfig {
             }
         };
 
-
-        return TestFunctionCreator.createTestFunction(this.batchId, this.structurePath, this.structureName, this.required, extendedStarter, this.timeout, this.cooldown, this.rotation);
+        //todo fix using structureName twice here! But for some reason it is actually working best like this.
+        return TestFunctionCreator.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, extendedStarter, this.timeout, this.cooldown, this.rotation);
     }
 
     public TestConfig startWith(Consumer<StartupParameter> starter) {

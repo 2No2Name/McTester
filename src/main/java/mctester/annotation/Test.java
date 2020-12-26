@@ -12,7 +12,7 @@ public @interface Test {
     boolean required() default true;
     String batchId() default "defaultbatch";
     String structureName();
-//    String structurePath() default "defaultpath"; //seems to be used interchangeably with structureName
+    String groupName() default "";
     int cooldown() default 0;
     int timeout() default 400; //default 20 second timeout, test is counted as failed after this time
     BlockRotation rotation() default BlockRotation.NONE;

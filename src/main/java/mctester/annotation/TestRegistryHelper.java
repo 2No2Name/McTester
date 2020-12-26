@@ -1,15 +1,41 @@
 package mctester.annotation;
 
+import mctester.Templates;
 import mctester.test.TestConfig;
 import mctester.test.TestHelper;
+import net.minecraft.test.StructureTestUtil;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class TestRegistryHelper {
     public static void createTestsFromClass(Class<?> clazz) {
         Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getAnnotation(Test.class) != null || m.getAnnotation(Tests.class) != null).forEach(TestRegistryHelper::createTestFromMethod);
+    }
+
+    public static void createTestsFromTemplates() {
+        String structuresDirectoryName = StructureTestUtil.testStructuresDirectoryName;
+        File[] files = new File(structuresDirectoryName).listFiles();
+        for (File file : files) {
+            String fileName = file.getName();
+            if (!file.isFile() || !file.canRead() || !fileName.endsWith(".snbt")) {
+                continue;
+            }
+            String structureName = fileName.substring(0, fileName.length() - ".snbt".length());
+            int dotIndex = structureName.indexOf(".");
+            if (dotIndex < 0) {
+                continue;
+            }
+            String templateName = structureName.substring(0, dotIndex);
+            Consumer<TestConfig> testConfigConsumer = Templates.TEST_TEMPLATES.get(templateName);
+            if (testConfigConsumer != null) {
+                createTestForFile(structureName, templateName, testConfigConsumer);
+            }
+        }
+
     }
 
     public static void createTestFromMethod(Method method) {
@@ -24,14 +50,19 @@ public class TestRegistryHelper {
         }
     }
 
+    public static void createTestForFile(String structureName, String template, Consumer<TestConfig> method) {
+        TestConfig testConfig = new TestConfig().structureName(structureName);
+        method.accept(testConfig);
+        TestHelper.registerTest(testConfig.build(), template);
+    }
+
     public static void createTest(Method method, Test annotation) {
         TestConfig testConfig = TestConfig.from(annotation);
         try {
             method.invoke(null, testConfig);
-            TestHelper.registerTest(testConfig.build());
+            TestHelper.registerTest(testConfig.build(), annotation.groupName());
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-
     }
 }

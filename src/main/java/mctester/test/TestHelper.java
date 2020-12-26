@@ -12,8 +12,11 @@ import java.util.function.Consumer;
 
 public class TestHelper {
 
-    public static void registerTest(TestFunction testFunction) {
+    public static void registerTest(TestFunction testFunction, String className) {
         TestFunctions.getTestFunctions().add(testFunction);
+        if (!className.equals("")) {
+            TestFunctions.getTestClasses().add(className);
+        }
     }
 
     /**

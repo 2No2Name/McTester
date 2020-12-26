@@ -11,6 +11,6 @@ public class MCTesterMod implements ModInitializer {
 		// Proceed with mild caution.
 
 		TestRegistryHelper.createTestsFromClass(MyTests.class);
-
+		TestRegistryHelper.createTestsFromTemplates();
 	}
 }

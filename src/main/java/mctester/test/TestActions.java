@@ -25,16 +25,16 @@ public class TestActions {
         return new GetEntities(entityConsumer);
     }
     public static Consumer<GameTest> spawnEntity(int x, int y, int z, EntityType<?> entity) {
-        return new SpawnEntityAction(x + 0.5D, y + 0.5D, z + 0.5D, entity);
+        return new SpawnEntity(x + 0.5D, y + 0.5D, z + 0.5D, entity);
     }
     public static Consumer<GameTest> spawnEntity(int x, int y, int z, EntityType<?> entity, CompoundTag entityTag) {
-        return new SpawnEntityAction(x + 0.5F, y + 0.5F, z + 0.5F, entity, entityTag);
+        return new SpawnEntity(x + 0.5F, y + 0.5F, z + 0.5F, entity, entityTag);
     }
     public static Consumer<GameTest> spawnEntity(double x, double y, double z, EntityType<?> entity) {
-        return new SpawnEntityAction(x, y, z, entity);
+        return new SpawnEntity(x, y, z, entity);
     }
     public static Consumer<GameTest> spawnEntity(double x, double y, double z, EntityType<?> entity, CompoundTag entityTag) {
-        return new SpawnEntityAction(x, y, z, entity, entityTag);
+        return new SpawnEntity(x, y, z, entity, entityTag);
     }
 
     public static Stream<BlockPos> streamPositions(GameTest gameTest) {
@@ -90,18 +90,18 @@ public class TestActions {
         }
     }
 
-    public static class SpawnEntityAction implements Consumer<GameTest> {
+    public static class SpawnEntity implements Consumer<GameTest> {
         final double x;
         final double y;
         final double z;
         final EntityType<? extends Entity> entityType;
         final CompoundTag entityTag;
 
-        public SpawnEntityAction(double x, double y, double z, EntityType<? extends Entity> entityType) {
+        public SpawnEntity(double x, double y, double z, EntityType<? extends Entity> entityType) {
             this(x, y, z, entityType, null);
         }
 
-        public SpawnEntityAction(double x, double y, double z, EntityType<? extends Entity> entityType, CompoundTag entityTag) {
+        public SpawnEntity(double x, double y, double z, EntityType<? extends Entity> entityType, CompoundTag entityTag) {
             this.x = x;
             this.y = y;
             this.z = z;
