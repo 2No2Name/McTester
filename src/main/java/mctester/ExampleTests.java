@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 
-public class MyTests {
+public class ExampleTests {
     public static final CompoundTag PERSISTENCE_REQUIRED = new CompoundTag();
     static {
         PERSISTENCE_REQUIRED.putBoolean("PersistenceRequired", true);
@@ -55,9 +55,9 @@ public class MyTests {
 
 
     /**
-     * A test that can be used to create tests with a simple redstone interface.
+     * A test function that can be used to create tests with a simple redstone interface.
      */
-    public static void simple_redstone_test(TestConfig testConfig) {
+    public static void basic_redstone_test(TestConfig testConfig) {
         ArrayList<BlockPos> emeraldBlockList = new ArrayList<>();
 
         //Replace all red terracotta with redstone block at the start

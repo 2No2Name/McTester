@@ -10,7 +10,8 @@ public class MCTesterMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		TestRegistryHelper.createTestsFromClass(MyTests.class);
-		TestRegistryHelper.createTestsFromTemplates();
+		TestRegistryHelper.convertAllNbtToSnbt();
+		TestRegistryHelper.createTestsFromClass(ExampleTests.class);
+		TestRegistryHelper.createTemplatedTestsFromFiles();
 	}
 }
