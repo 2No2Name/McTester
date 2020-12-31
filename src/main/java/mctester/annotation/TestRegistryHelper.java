@@ -9,12 +9,16 @@ import net.minecraft.test.StructureTestUtil;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class TestRegistryHelper {
 
+    /**
+     * Convenience method to allow the user to put normal structure block nbt files into the gameteststructures folder.
+     */
     public static void convertAllNbtToSnbt() {
         String structuresDirectoryName = StructureTestUtil.testStructuresDirectoryName;
         File[] files = new File(structuresDirectoryName).listFiles();
@@ -25,8 +29,12 @@ public class TestRegistryHelper {
             }
             String structureName = fileName.substring(0, fileName.length() - ".nbt".length());
 
-            NbtProvider.convertNbtToSnbt(file.toPath(), structureName, Paths.get(structuresDirectoryName));
-            boolean b = file.delete();
+            Path path = NbtProvider.convertNbtToSnbt(file.toPath(), structureName, Paths.get(structuresDirectoryName));
+            if (path != null) {
+                //delete nbt file after successfully converting to snbt
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
         }
     }
 
