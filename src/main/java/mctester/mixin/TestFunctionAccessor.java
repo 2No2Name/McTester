@@ -26,4 +26,8 @@ public interface TestFunctionAccessor {
     void setDuration(long duration);
     @Accessor("field_25306")
     void setRotation(BlockRotation field_25306);
+    @Accessor("field_27814")
+    void setRepetitions(int repetitions);
+    @Accessor("field_27815")
+    void setRequiredSuccessCount(int repetitions);
 }

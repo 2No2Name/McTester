@@ -2,6 +2,7 @@ package mctester.test;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mctester.annotation.Test;
+import mctester.util.UnsafeUtil;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.StartupParameter;
 import net.minecraft.test.TestFunction;
@@ -21,6 +22,8 @@ public class TestConfig {
     private boolean required = true;
     private BlockRotation rotation = BlockRotation.NONE;
     private Consumer<StartupParameter> starter;
+    private int repetitions;
+    private int requiredSuccessCount;
 
     private final Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick = new Int2ObjectOpenHashMap<>();
     private final ArrayList<Consumer<GameTest>> repeatedActions = new ArrayList<>();
@@ -44,23 +47,22 @@ public class TestConfig {
 //                .structurePath(structurePath) //todo for some reason using path as name is better too
                 .structureName(structurePath)
                 .timeout(annotation.timeout())
-                .rotation(annotation.rotation());
+                .rotation(annotation.rotation()).repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount());
     }
 
     public TestFunction build() {
         Consumer<StartupParameter> extendedStarter = (t) -> {
-            //use a hack to schedule the Runnables/Consumers we want to run during the test.
+            //schedule the Runnables/Consumers we want to run during the test.
             for (int tick : this.actionsByTick.keySet()) {
                 ArrayList<Consumer<GameTest>> actions = this.actionsByTick.get(tick);
                 if (actions != null && !actions.isEmpty()) {
                     TestHelper.addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
                 }
             }
-            //we have to add repeated actions to every single tick
+            //schedule the repeated actions to tick ranges
             if (!repeatedActions.isEmpty()) {
                 TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), 0, this.timeout + 1);
             }
-
 
             if (this.starter != null) {
                 this.starter.accept(t);
@@ -68,7 +70,7 @@ public class TestConfig {
         };
 
         //todo fix using structureName twice here! But for some reason it is actually working best like this.
-        return TestFunctionCreator.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, extendedStarter, this.timeout, this.cooldown, this.rotation);
+        return UnsafeUtil.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, extendedStarter, this.timeout, this.cooldown, this.rotation, this.repetitions, this.requiredSuccessCount);
     }
 
     public TestConfig startWith(Consumer<StartupParameter> starter) {
@@ -113,6 +115,17 @@ public class TestConfig {
         this.rotation = rotation;
         return this;
     }
+
+    public TestConfig requiredSuccessCount(int requiredSuccessCount) {
+        this.requiredSuccessCount = requiredSuccessCount;
+        return this;
+    }
+
+    public TestConfig repetitions(int repetitions) {
+        this.repetitions = repetitions;
+        return this;
+    }
+
 
     public TestConfig addAction(int tick, Consumer<GameTest> action) {
         ArrayList<Consumer<GameTest>> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));

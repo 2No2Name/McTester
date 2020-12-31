@@ -4,15 +4,10 @@ import mctester.annotation.Test;
 import mctester.test.TestActions;
 import mctester.test.TestConfig;
 import mctester.util.GameTestUtil;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.NoteBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-
-import java.util.ArrayList;
 
 public class ExampleTests {
     public static final CompoundTag PERSISTENCE_REQUIRED = new CompoundTag();
@@ -50,34 +45,6 @@ public class ExampleTests {
                 gameTest -> GameTestUtil.getEntitiesInTestArea(gameTest).stream().anyMatch(
                         entity -> (entity.getType() == EntityType.SKELETON || entity.getType() == EntityType.WOLF)
                                 && !entity.isAlive())
-        );
-    }
-
-
-    /**
-     * A test function that can be used to create tests with a simple redstone interface.
-     */
-    public static void basic_redstone_test(TestConfig testConfig) {
-        ArrayList<BlockPos> emeraldBlockList = new ArrayList<>();
-
-        //Replace all red terracotta with redstone block at the start
-        testConfig.addAction(0, gameTest -> TestActions.streamPositions(gameTest).forEach(blockPos -> {
-            BlockState blockState = gameTest.getWorld().getBlockState(blockPos);
-            if (blockState.isOf(Blocks.RED_TERRACOTTA)) {
-                gameTest.getWorld().setBlockState(blockPos, Blocks.REDSTONE_BLOCK.getDefaultState());
-            }
-            if (blockState.isOf(Blocks.EMERALD_BLOCK)) {
-                emeraldBlockList.add(blockPos.toImmutable());
-            }
-        }));
-
-        //Succeed when any powered note block is on top of an emerald block. Assume the emerald block doesn't move etc.
-        testConfig.addSuccessCondition(
-                gameTest -> emeraldBlockList.stream().anyMatch(blockPos -> {
-                    BlockState blockState = gameTest.getWorld().getBlockState(blockPos.up());
-                    return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
-                            gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
-                })
         );
     }
 }

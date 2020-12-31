@@ -25,16 +25,30 @@ public class TestActions {
         return new GetEntities(entityConsumer);
     }
     public static Consumer<GameTest> spawnEntity(int x, int y, int z, EntityType<?> entity) {
-        return new SpawnEntity(x + 0.5D, y + 0.5D, z + 0.5D, entity);
+        return new SpawnEntity(x + 0.5D, y, z + 0.5D, entity);
     }
     public static Consumer<GameTest> spawnEntity(int x, int y, int z, EntityType<?> entity, CompoundTag entityTag) {
-        return new SpawnEntity(x + 0.5F, y + 0.5F, z + 0.5F, entity, entityTag);
+        return new SpawnEntity(x + 0.5F, y, z + 0.5F, entity, entityTag);
+    }
+    public static Consumer<GameTest> spawnEntity(int x, int y, int z, EntityType<?> entity, CompoundTag... entityTags) {
+        CompoundTag tag = new CompoundTag();
+        for (CompoundTag entityTag : entityTags) {
+            tag.copyFrom(entityTag);
+        }
+        return new SpawnEntity(x + 0.5F, y, z + 0.5F, entity, tag);
     }
     public static Consumer<GameTest> spawnEntity(double x, double y, double z, EntityType<?> entity) {
         return new SpawnEntity(x, y, z, entity);
     }
     public static Consumer<GameTest> spawnEntity(double x, double y, double z, EntityType<?> entity, CompoundTag entityTag) {
         return new SpawnEntity(x, y, z, entity, entityTag);
+    }
+    public static Consumer<GameTest> spawnEntity(double x, double y, double z, EntityType<?> entity, CompoundTag... entityTags) {
+        CompoundTag tag = new CompoundTag();
+        for (CompoundTag entityTag : entityTags) {
+            tag.copyFrom(entityTag);
+        }
+        return new SpawnEntity(x, y, z, entity, tag);
     }
 
     public static Stream<BlockPos> streamPositions(GameTest gameTest) {

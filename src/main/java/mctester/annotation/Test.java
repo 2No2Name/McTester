@@ -16,4 +16,7 @@ public @interface Test {
     int cooldown() default 0;
     int timeout() default 400; //default 20 second timeout, test is counted as failed after this time
     BlockRotation rotation() default BlockRotation.NONE;
+    int repetitions() default 1;
+    int requiredSuccessCount() default 1;
+
 }
