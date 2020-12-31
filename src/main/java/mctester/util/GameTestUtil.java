@@ -32,11 +32,9 @@ public class GameTestUtil {
     }
 
     public static Box transformBox(GameTest gameTest, Box box) {
-        ServerWorld serverWorld = gameTest.getWorld();
         BlockPos blockPos = gameTest.getPos();
         Vec3d corner1 = new Vec3d(box.minX, box.minY, box.minZ);
         Vec3d corner2 = new Vec3d(box.maxX, box.maxY, box.maxZ);
-
 
         //transform the position so the spawning works
         corner1 = Structure.transformAround(corner1.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.method_29402(), blockPos);
