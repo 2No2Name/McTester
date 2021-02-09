@@ -1,4 +1,4 @@
-package mctester.test;
+package mctester.common;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import mctester.annotation.Test;
@@ -27,6 +27,7 @@ public class TestConfig {
 
     private final Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick = new Int2ObjectOpenHashMap<>();
     private final ArrayList<Consumer<GameTest>> repeatedActions = new ArrayList<>();
+    private int repeatedActionsStart = 1;
 
 
     public TestConfig() {
@@ -47,7 +48,8 @@ public class TestConfig {
 //                .structurePath(structurePath) //todo for some reason using path as name is better too
                 .structureName(structurePath)
                 .timeout(annotation.timeout())
-                .rotation(annotation.rotation()).repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount());
+                .rotation(annotation.rotation()).repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount())
+                .repeatedActionsStart(annotation.repeatedActionsStart());
     }
 
     public TestFunction build() {
@@ -61,7 +63,7 @@ public class TestConfig {
             }
             //schedule the repeated actions to tick ranges
             if (!repeatedActions.isEmpty()) {
-                TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), 0, this.timeout + 1);
+                TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), this.repeatedActionsStart, this.timeout + 1);
             }
 
             if (this.starter != null) {
@@ -130,6 +132,11 @@ public class TestConfig {
     public TestConfig addAction(int tick, Consumer<GameTest> action) {
         ArrayList<Consumer<GameTest>> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));
         actions.add(action);
+        return this;
+    }
+
+    public TestConfig repeatedActionsStart(int tick) {
+        this.repeatedActionsStart = tick;
         return this;
     }
 

@@ -4,8 +4,10 @@
   "package": "mctester.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "Autostart_MinecraftServerMixin",
+    "EnableTesting_SharedConstantsMixin",
     "GameTestAccessor",
-    "SharedConstantsMixin",
+    "CheckAndPrintResults_TestCommandMixin",
     "StartupParameterAccessor",
     "TestFunctionAccessor"
   ],

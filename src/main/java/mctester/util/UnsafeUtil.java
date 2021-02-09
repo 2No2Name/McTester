@@ -20,8 +20,8 @@ public class UnsafeUtil {
             UnsafeUtil.unsafe = (Unsafe) unsafeField.get(null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
+            throw new IllegalStateException("McTester: Could not get Unsafe!", e);
         }
-
     }
 
     public static TestFunction createTestFunction(String batchId, String structurePath, String structureName, boolean required, Consumer<StartupParameter> starter, int tickLimit, long duration, BlockRotation field_25306, int repetitions, int requiredSuccessCount) {

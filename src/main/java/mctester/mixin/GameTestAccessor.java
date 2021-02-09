@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface GameTestAccessor {
     @Accessor("field_21453")
     Object2LongMap<Runnable> getField_21453();
-    @Accessor("field_27805")
+    @Accessor("structureBlockEntity")
     StructureBlockBlockEntity getStructureBlockBlockEntity();
 }

@@ -24,10 +24,10 @@ public interface TestFunctionAccessor {
     void setTickLimit(int tickLimit);
     @Accessor("duration")
     void setDuration(long duration);
-    @Accessor("field_25306")
+    @Accessor("rotation")
     void setRotation(BlockRotation field_25306);
-    @Accessor("field_27814")
+    @Accessor("maxAttempts")
     void setRepetitions(int repetitions);
-    @Accessor("field_27815")
+    @Accessor("requiredSuccesses")
     void setRequiredSuccessCount(int repetitions);
 }

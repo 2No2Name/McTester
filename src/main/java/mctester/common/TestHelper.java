@@ -1,4 +1,4 @@
-package mctester.test;
+package mctester.common;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import mctester.mixin.GameTestAccessor;

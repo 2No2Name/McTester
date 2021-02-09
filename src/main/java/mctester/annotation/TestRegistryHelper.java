@@ -1,8 +1,8 @@
 package mctester.annotation;
 
 import mctester.Templates;
-import mctester.test.TestConfig;
-import mctester.test.TestHelper;
+import mctester.common.TestConfig;
+import mctester.common.TestHelper;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.test.StructureTestUtil;
 
