@@ -62,8 +62,8 @@ public class GameTestUtil {
         }
 
         if (entityTag != null) {
-            CompoundTag newTag = NbtPredicate.entityToTag(entity).copy().copyFrom(entityTag);
-            entity.fromTag(newTag);
+            CompoundTag newTag = NbtPredicate.entityToNbt(entity).copy().copyFrom(entityTag);
+            entity.readNbt(newTag);
         }
 
         BlockPos blockPos = gameTest.getPos();
