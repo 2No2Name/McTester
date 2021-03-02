@@ -22,7 +22,13 @@ public class TestRegistryHelper {
     public static void convertAllNbtToSnbt() {
         String structuresDirectoryName = StructureTestUtil.testStructuresDirectoryName;
         File[] files = new File(structuresDirectoryName).listFiles();
+        if (files == null) {
+            return;
+        }
         for (File file : files) {
+            if (file == null) {
+                continue;
+            }
             String fileName = file.getName();
             if (!file.isFile() || !file.canRead() || !fileName.endsWith(".nbt")) {
                 continue;
