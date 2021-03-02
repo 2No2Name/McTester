@@ -20,7 +20,10 @@ public class McTesterMod implements ModInitializer {
 		// Proceed with mild caution.
 
 		TestRegistryHelper.convertAllNbtToSnbt();
-		TestRegistryHelper.createTestsFromClass(ExampleTests.class);
+
+		//this is just an example, when this mod is used as a dependency this line should stay commented
+//		TestRegistryHelper.createTestsFromClass(ExampleTests.class);
+
 		TestRegistryHelper.createTemplatedTestsFromFiles();
 
 		shouldAutorun = true;
