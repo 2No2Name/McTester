@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "Autostart_MinecraftServerMixin",
+    "CheckAndPrintResults_TestCommandMixin",
+    "crash_exit_code_fix.MinecraftServerMixin",
     "EnableTesting_SharedConstantsMixin",
     "GameTestAccessor",
-    "CheckAndPrintResults_TestCommandMixin",
     "StartupParameterAccessor",
     "TestFunctionAccessor"
   ],
