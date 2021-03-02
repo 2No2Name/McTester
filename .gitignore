@@ -30,5 +30,10 @@ bin/
 
 # fabric
 
+
+# relevant files in the run directory
 run/*
 !run/gameteststructures/
+!run/world/
+run/world/*
+!run/world/level.dat
