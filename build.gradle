@@ -58,13 +58,6 @@ jar {
 }
 
 test {
-	doLast {
-		exec {
-			workingDir './mctester'
-			commandLine 'cp ../build/libs/mc-tester-1.0.0.jar mods/'
-
-		}
-	}
 }
 test.dependsOn(jar)
 
