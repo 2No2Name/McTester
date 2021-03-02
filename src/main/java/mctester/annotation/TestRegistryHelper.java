@@ -5,6 +5,8 @@ import mctester.common.TestConfig;
 import mctester.common.TestHelper;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.test.StructureTestUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +17,8 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class TestRegistryHelper {
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static boolean shouldWarnOnMissingStructureFile = true;
 
     /**
      * Convenience method to allow the user to put normal structure block nbt files into the gameteststructures folder.
@@ -89,6 +93,14 @@ public class TestRegistryHelper {
 
     public static void createTest(Method method, Test annotation) {
         TestConfig testConfig = TestConfig.from(annotation);
+        Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
+        Path structurePath = path.resolve(annotation.groupName() + "." + annotation.structureName() + ".snbt");
+        if (!structurePath.toFile().exists()) {
+            if (shouldWarnOnMissingStructureFile) {
+                LOGGER.warn("Structure for test not found: Method name: " + method.getName() + " Structure path: " + structurePath + " . Removing test!");
+            }
+            return;
+        }
         try {
             method.invoke(null, testConfig);
             TestHelper.registerTest(testConfig.build(), annotation.groupName());

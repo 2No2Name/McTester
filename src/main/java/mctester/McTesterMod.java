@@ -2,11 +2,8 @@ package mctester;
 
 import mctester.annotation.TestRegistryHelper;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
 
 public class McTesterMod implements ModInitializer {
 	private static boolean shouldAutorun;
@@ -21,8 +18,10 @@ public class McTesterMod implements ModInitializer {
 
 		TestRegistryHelper.convertAllNbtToSnbt();
 
-		//this is just an example, when this mod is used as a dependency this line should stay commented
-//		TestRegistryHelper.createTestsFromClass(ExampleTests.class);
+		boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
+		TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
+		TestRegistryHelper.createTestsFromClass(ExampleTests.class);
+		TestRegistryHelper.shouldWarnOnMissingStructureFile = tmp;
 
 		TestRegistryHelper.createTemplatedTestsFromFiles();
 
