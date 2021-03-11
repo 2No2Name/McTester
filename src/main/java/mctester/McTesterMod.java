@@ -17,7 +17,6 @@ public class McTesterMod implements ModInitializer {
 	private static boolean shouldCrashOnFail;
 	private static boolean shouldShutdownAfterTest;
 	private static boolean shouldStayUpAfterFail;
-
 	private static long autorunShuffleSeed;
 
 	@Override
@@ -41,7 +40,6 @@ public class McTesterMod implements ModInitializer {
 		shouldCrashOnFail = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
 		shouldShutdownAfterTest = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
 		shouldStayUpAfterFail = false;
-
 
 		String autostartProperty = System.getProperty("mctester.autostart");
 		if (autostartProperty != null) {
@@ -69,6 +67,11 @@ public class McTesterMod implements ModInitializer {
 			shouldStayUpAfterFail = Boolean.parseBoolean(stayUpAfterFailProperty);
 		}
 
+		//Moved to SharedConstantsMixin
+//		String isDevelopmentProperty = System.getProperty("mctester.isDevelopment");
+//		if (isDevelopmentProperty != null) {
+//			isDevelopment = Boolean.parseBoolean(isDevelopmentProperty);
+//		}
 	}
 
 	public static boolean shouldAutorun() {
@@ -94,5 +97,4 @@ public class McTesterMod implements ModInitializer {
 	public static boolean shouldStayUpAfterFail() {
 		return shouldStayUpAfterFail;
 	}
-
 }

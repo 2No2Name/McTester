@@ -1,4 +1,4 @@
-package mctester.mixin;
+package mctester.mixin.startup;
 
 import mctester.McTesterMod;
 import net.minecraft.server.MinecraftServer;
