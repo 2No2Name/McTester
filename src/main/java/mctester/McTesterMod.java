@@ -8,6 +8,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.util.Random;
 
 public class McTesterMod implements ModInitializer {
+	public static final String crashOnFailOptionName = "mctester.crashOnFail";
+
 	private static boolean shouldAutorun;
 	//shuffling the test functions leads to the same test not always running in the same position and with the same neighboring tests
 	//if a test breaks due to interaction with a neighboring tests, it or the neighboring test should be redesigned
@@ -53,7 +55,7 @@ public class McTesterMod implements ModInitializer {
 		if (autostartShuffleSeedProperty != null) {
 			autorunShuffleSeed = Long.parseLong(autostartShuffleSeedProperty);
 		}
-		String crashOnFailProperty = System.getProperty("mctester.crashOnFail");
+		String crashOnFailProperty = System.getProperty(crashOnFailOptionName);
 		if (crashOnFailProperty != null) {
 			shouldCrashOnFail = Boolean.parseBoolean(crashOnFailProperty);
 		}

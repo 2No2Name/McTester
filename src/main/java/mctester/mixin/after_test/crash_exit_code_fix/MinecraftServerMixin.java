@@ -1,4 +1,4 @@
-package mctester.mixin.crash_exit_code_fix;
+package mctester.mixin.after_test.crash_exit_code_fix;
 
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,6 +7,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * This mixin makes the server crashing use System.exit(1) instead of System.exit(0). For example gradle can use this to
+ * detect the failure.
+ */
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
     private boolean systemExit1WithServerThread = false;
