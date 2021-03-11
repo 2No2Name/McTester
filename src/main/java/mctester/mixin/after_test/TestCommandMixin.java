@@ -1,6 +1,6 @@
 package mctester.mixin.after_test;
 
-import mctester.McTesterMod;
+import mctester.McTesterConfig;
 import net.minecraft.server.command.TestCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
@@ -21,13 +21,13 @@ public class TestCommandMixin {
     private static void handleTestEnd(ServerWorld world, String message, Formatting formatting, CallbackInfo ci) {
         LOGGER.info(message);
         if (message.endsWith(" required tests failed :(")) {
-            if (McTesterMod.shouldCrashOnFail()) {
+            if (McTesterConfig.shouldCrashOnFail()) {
                 intentionallyCrashServerDueToFailedTests();
-            } else if (McTesterMod.shouldShutdownAfterTest() && !McTesterMod.shouldStayUpAfterFail()) {
+            } else if (McTesterConfig.shouldShutdownAfterTest() && !McTesterConfig.shouldStayUpAfterFail()) {
                 world.getServer().stop(false);
             }
         } else if (message.endsWith("All required tests passed :)")) {
-            if (McTesterMod.shouldShutdownAfterTest()) {
+            if (McTesterConfig.shouldShutdownAfterTest()) {
                 world.getServer().stop(false);
             }
         }

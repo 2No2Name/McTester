@@ -1,6 +1,6 @@
 package mctester.mixin.startup;
 
-import mctester.McTesterMod;
+import mctester.McTesterConfig;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -29,10 +29,10 @@ public abstract class Autostart_MinecraftServerMixin {
 
     @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setFavicon(Lnet/minecraft/server/ServerMetadata;)V"))
     private void runAllTests(CallbackInfo ci) {
-        if (McTesterMod.shouldAutorun()) {
-            if (McTesterMod.shouldShuffleBeforeAutorun()) {
+        if (McTesterConfig.shouldAutorun()) {
+            if (McTesterConfig.shouldShuffleBeforeAutorun()) {
                 Collection<TestFunction> testFunctions = TestFunctions.getTestFunctions();
-                long seed = McTesterMod.shuffleSeed();
+                long seed = McTesterConfig.shuffleSeed();
                 Random random = new Random(seed);
                 LOGGER.info("Shuffling tests with random seed: " + seed);
                 if (testFunctions instanceof List) {
