@@ -5,10 +5,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.util.Random;
+
 public class McTesterMod implements ModInitializer {
 	private static boolean shouldAutorun;
+	//shuffling the test functions leads to the same test not always running in the same position and with the same neighboring tests
+	//if a test breaks due to interaction with a neighboring tests, it or the neighboring test should be redesigned
+	private static boolean shouldAutorunShuffle;
 	private static boolean shouldCrashOnFail;
 	private static boolean shouldShutdownAfterTest;
+	private static boolean shouldStayUpAfterFail;
+
+	private static long autorunShuffleSeed;
 
 	@Override
 	public void onInitialize() {
@@ -26,13 +34,24 @@ public class McTesterMod implements ModInitializer {
 		TestRegistryHelper.createTemplatedTestsFromFiles();
 
 		shouldAutorun = true;
+		shouldAutorunShuffle = true;
+		autorunShuffleSeed = new Random().nextLong();
 		shouldCrashOnFail = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
 		shouldShutdownAfterTest = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
+		shouldStayUpAfterFail = false;
 
 
 		String autostartProperty = System.getProperty("mctester.autostart");
 		if (autostartProperty != null) {
 			shouldAutorun = Boolean.parseBoolean(autostartProperty);
+		}
+		String autostartShuffleProperty = System.getProperty("mctester.autostart.shuffle");
+		if (autostartShuffleProperty != null) {
+			shouldAutorunShuffle = Boolean.parseBoolean(autostartShuffleProperty);
+		}
+		String autostartShuffleSeedProperty = System.getProperty("mctester.autostart.shuffle.seed");
+		if (autostartShuffleSeedProperty != null) {
+			autorunShuffleSeed = Long.parseLong(autostartShuffleSeedProperty);
 		}
 		String crashOnFailProperty = System.getProperty("mctester.crashOnFail");
 		if (crashOnFailProperty != null) {
@@ -43,10 +62,23 @@ public class McTesterMod implements ModInitializer {
 			shouldShutdownAfterTest = Boolean.parseBoolean(shutdownAfterTestProperty);
 		}
 
+		String stayUpAfterFailProperty = System.getProperty("mctester.stayUpAfterFail");
+		if (stayUpAfterFailProperty != null) {
+			shouldStayUpAfterFail = Boolean.parseBoolean(stayUpAfterFailProperty);
+		}
+
 	}
 
 	public static boolean shouldAutorun() {
 		return shouldAutorun;
+	}
+
+	public static boolean shouldShuffleBeforeAutorun() {
+    	return shouldAutorunShuffle;
+	}
+
+	public static long shuffleSeed() {
+		return autorunShuffleSeed;
 	}
 
 	public static boolean shouldCrashOnFail() {
@@ -56,4 +88,9 @@ public class McTesterMod implements ModInitializer {
 	public static boolean shouldShutdownAfterTest() {
 		return shouldShutdownAfterTest;
 	}
+
+	public static boolean shouldStayUpAfterFail() {
+		return shouldStayUpAfterFail;
+	}
+
 }

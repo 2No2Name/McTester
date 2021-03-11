@@ -23,7 +23,7 @@ public class CheckAndPrintResults_TestCommandMixin {
         if (message.endsWith(" required tests failed :(")) {
             if (McTesterMod.shouldCrashOnFail()) {
                 throw new CrashException(new CrashReport("Automatically triggered crash due to failed tests", new Throwable()));
-            } else if (McTesterMod.shouldShutdownAfterTest()){
+            } else if (McTesterMod.shouldShutdownAfterTest() && !McTesterMod.shouldStayUpAfterFail()) {
                 world.getServer().stop(false);
             }
         } else if (message.endsWith("All required tests passed :)")) {
