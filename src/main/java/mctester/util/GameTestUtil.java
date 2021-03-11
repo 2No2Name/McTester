@@ -3,7 +3,6 @@ package mctester.util;
 import mctester.mixin.GameTestAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
@@ -55,7 +54,7 @@ public class GameTestUtil {
         ServerWorld serverWorld = gameTest.getWorld();
         Entity entity = entityType.create(serverWorld);
         if (entity == null) {
-            throw new IllegalStateException("Could not create entity of Type");
+            throw new IllegalStateException("Could not create entity of Type " + entityType);
         }
         if (entity instanceof MobEntity) {
             ((MobEntity)entity).initialize(serverWorld, serverWorld.getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
