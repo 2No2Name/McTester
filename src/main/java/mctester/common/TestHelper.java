@@ -1,8 +1,8 @@
 package mctester.common;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import mctester.mixin.GameTestAccessor;
-import mctester.mixin.StartupParameterAccessor;
+import mctester.mixin.accessor.GameTestAccessor;
+import mctester.mixin.accessor.StartupParameterAccessor;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.StartupParameter;
 import net.minecraft.test.TestFunction;

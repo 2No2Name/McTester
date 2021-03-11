@@ -1,6 +1,6 @@
 package mctester.util;
 
-import mctester.mixin.TestFunctionAccessor;
+import mctester.mixin.accessor.TestFunctionAccessor;
 import net.minecraft.test.StartupParameter;
 import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;

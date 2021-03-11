@@ -4,9 +4,9 @@
   "package": "mctester.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "GameTestAccessor",
-    "StartupParameterAccessor",
-    "TestFunctionAccessor",
+    "accessor.GameTestAccessor",
+    "accessor.StartupParameterAccessor",
+    "accessor.TestFunctionAccessor",
     "after_test.TestCommandMixin",
     "after_test.crash_exit_code_fix.MinecraftServerMixin",
     "enable_testing.CommandManagerMixin",

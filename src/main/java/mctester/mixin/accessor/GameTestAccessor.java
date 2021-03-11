@@ -1,4 +1,4 @@
-package mctester.mixin;
+package mctester.mixin.accessor;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import net.minecraft.block.entity.StructureBlockBlockEntity;

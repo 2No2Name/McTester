@@ -1,6 +1,6 @@
 package mctester.util;
 
-import mctester.mixin.GameTestAccessor;
+import mctester.mixin.accessor.GameTestAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

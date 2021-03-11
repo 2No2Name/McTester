@@ -1,4 +1,4 @@
-package mctester.mixin;
+package mctester.mixin.accessor;
 
 import net.minecraft.test.GameTest;
 import net.minecraft.test.StartupParameter;
