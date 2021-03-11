@@ -14,7 +14,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class TestRegistryHelper {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -66,9 +67,9 @@ public class TestRegistryHelper {
                 continue;
             }
             String templateName = structureName.substring(0, dotIndex);
-            Consumer<TestConfig> testConfigConsumer = Templates.TEST_TEMPLATES.get(templateName);
-            if (testConfigConsumer != null) {
-                createTestForFile(structureName, templateName, testConfigConsumer);
+            Function<TestConfig, Stream<TestConfig>> testVariantCreator = Templates.TEST_TEMPLATES.get(templateName);
+            if (testVariantCreator != null) {
+                createTestForFile(structureName, templateName, testVariantCreator);
             }
         }
     }
@@ -85,14 +86,15 @@ public class TestRegistryHelper {
         }
     }
 
-    public static void createTestForFile(String structureName, String template, Consumer<TestConfig> method) {
-        TestConfig testConfig = new TestConfig().structureName(structureName);
-        method.accept(testConfig);
-        TestHelper.registerTest(testConfig.build(), template);
+    public static void createTestForFile(String structureName, String templateName, Function<TestConfig, Stream<TestConfig>> testVariantCreator) {
+        TestConfig baseConfig = new TestConfig().structureName(structureName);
+        testVariantCreator.apply(baseConfig).forEach(
+                testConfig -> TestHelper.registerTest(testConfig.toTestFunction(), templateName)
+        );
     }
 
     public static void createTest(Method method, Test annotation) {
-        TestConfig testConfig = TestConfig.from(annotation);
+        Stream<TestConfig> testConfigs = TestConfig.from(annotation);
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
         Path structurePath = path.resolve(annotation.groupName() + "." + annotation.structureName() + ".snbt");
         if (!structurePath.toFile().exists()) {
@@ -101,11 +103,32 @@ public class TestRegistryHelper {
             }
             return;
         }
-        try {
-            method.invoke(null, testConfig);
-            TestHelper.registerTest(testConfig.build(), annotation.groupName());
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+        if (method.getReturnType() == void.class) {
+            testConfigs.forEach(
+                    (TestConfig testConfig) -> {
+                        try {
+                            method.invoke(null, testConfig);
+                            TestHelper.registerTest(testConfig.toTestFunction(), annotation.groupName());
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            throw new RuntimeException("Could not create tests!", e);
+                        }
+                    });
+        } else {
+            Function<TestConfig, Stream<TestConfig>> variantCreator = testConfig -> {
+                try {
+                    //noinspection unchecked
+                    return (Stream<TestConfig>) method.invoke(null, testConfig);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Could not create tests!", e);
+                }
+            };
+            createTests(testConfigs, variantCreator, annotation.groupName());
         }
+    }
+
+    public static void createTests(Stream<TestConfig> testConfigs, Function<TestConfig, Stream<TestConfig>> variantCreator, String groupName) {
+        testConfigs.flatMap(variantCreator).forEach(
+                testConfig -> TestHelper.registerTest(testConfig.toTestFunction(), groupName)
+        );
     }
 }

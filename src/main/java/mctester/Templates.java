@@ -11,10 +11,11 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.WeakHashMap;
-import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class Templates {
-    public static final Object2ReferenceOpenHashMap<String, Consumer<TestConfig>> TEST_TEMPLATES = new Object2ReferenceOpenHashMap<>();
+    public static final Object2ReferenceOpenHashMap<String, Function<TestConfig, Stream<TestConfig>>> TEST_TEMPLATES = new Object2ReferenceOpenHashMap<>();
 
     static {
         //replaces red terracotta with redstone block as start and succeeds if noteblock on top of emerald block is powered
@@ -24,7 +25,7 @@ public class Templates {
     /**
      * A test function that can be used to create tests with a simple redstone interface.
      */
-    public static void test_redstone(TestConfig testConfig) {
+    public static Stream<TestConfig> test_redstone(TestConfig testConfig) {
         //Need to use a GameTest->Object map here to avoid reusing the list when a test config is run again!
         WeakHashMap<GameTest, ArrayList<BlockPos>> emeraldBlockListStorage = new WeakHashMap<>();
 
@@ -54,5 +55,7 @@ public class Templates {
                             gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
                 })
         );
+
+        return Stream.of(testConfig);
     }
 }

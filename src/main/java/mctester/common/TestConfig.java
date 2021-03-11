@@ -9,8 +9,10 @@ import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class TestConfig {
 
@@ -34,25 +36,28 @@ public class TestConfig {
 
     }
 
-    public static TestConfig from(Test annotation) {
+    public static Stream<TestConfig> from(Test annotation) {
         String structurePath = annotation.groupName();
         if (!structurePath.equals("")) {
             structurePath = structurePath + ".";
         }
-        structurePath = structurePath + annotation.structureName();
+        String structureName = structurePath + annotation.structureName();
 
-        return new TestConfig()
-                .required(annotation.required())
-                .batchId(annotation.batchId())
-                .structurePlaceCooldown(annotation.cooldown())
-//                .structurePath(structurePath) //todo for some reason using path as name is better too
-                .structureName(structurePath)
-                .timeout(annotation.timeout())
-                .rotation(annotation.rotation()).repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount())
-                .repeatedActionsStart(annotation.repeatedActionsStart());
+        return Arrays.stream(annotation.rotation()).map(
+                blockRotation -> new TestConfig()
+                        .rotation(blockRotation)
+                        .required(annotation.required())
+                        .batchId(annotation.batchId())
+                        .structurePlaceCooldown(annotation.cooldown())
+//                .structurePath(structurePath) //todo for some reason using path = name seems to work better at the time of writing (1.17 snapshots)
+                        .structureName(structureName)
+                        .timeout(annotation.timeout())
+                        .repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount())
+                        .repeatedActionsStart(annotation.repeatedActionsStart())
+        );
     }
 
-    public TestFunction build() {
+    public TestFunction toTestFunction() {
         Consumer<StartupParameter> extendedStarter = (t) -> {
             //schedule the Runnables/Consumers we want to run during the test.
             for (int tick : this.actionsByTick.keySet()) {
@@ -160,6 +165,42 @@ public class TestConfig {
                 e.fail(new Exception(message));
             }
         });
+        return this;
+    }
+
+    public TestConfig deepCopy() {
+        return new TestConfig()
+                .rotation(this.rotation)
+                .required(this.required)
+                .batchId(this.batchId)
+                .structurePlaceCooldown(this.cooldown)
+                .structurePath(this.structurePath)
+                .structureName(this.structureName)
+                .timeout(this.timeout)
+                .repetitions(this.repetitions)
+                .requiredSuccessCount(this.requiredSuccessCount)
+                .repeatedActionsStart(this.repeatedActionsStart)
+                .copyRepeatedActions(this.repeatedActions)
+                .copyActionsByTick(this.actionsByTick)
+                .copyStarter(this.starter);
+
+    }
+
+    private TestConfig copyStarter(Consumer<StartupParameter> starter) {
+        this.starter = starter;
+        return this;
+    }
+
+    private TestConfig copyActionsByTick(Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick) {
+        this.actionsByTick.clear();
+        //noinspection unchecked
+        actionsByTick.forEach((key, value) -> this.actionsByTick.put((int) key, (ArrayList<Consumer<GameTest>>) value.clone()));
+        return this;
+    }
+
+    private TestConfig copyRepeatedActions(ArrayList<Consumer<GameTest>> repeatedActions) {
+        this.repeatedActions.clear();
+        this.repeatedActions.addAll(repeatedActions);
         return this;
     }
 }
