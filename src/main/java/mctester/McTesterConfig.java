@@ -12,7 +12,6 @@ import java.util.Properties;
 import java.util.Random;
 
 public class McTesterConfig {
-    public static final String crashOnFailOptionName = "crashOnFail";
     private static final Logger LOGGER = LogManager.getLogger("McTesterConfig");
     private static boolean shouldAutorun;
     //shuffling the test functions leads to the same test not always running in the same position and with the same neighboring tests
@@ -57,7 +56,7 @@ public class McTesterConfig {
             if (autostartShuffleSeedProperty != null) {
                 autorunShuffleSeed = Long.parseLong(autostartShuffleSeedProperty);
             }
-            String crashOnFailProperty = properties.getProperty(crashOnFailOptionName);
+            String crashOnFailProperty = properties.getProperty("crashOnFail");
             if (crashOnFailProperty != null) {
                 shouldCrashOnFail = Boolean.parseBoolean(crashOnFailProperty);
             }
