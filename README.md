@@ -3,7 +3,7 @@
 This mod allows using the automated structure based [test system](https://www.youtube.com/watch?v=vXaWOJTCYNg) Mojang
 created for minecraft. The test system is only partially included in minecraft and this mod adds some missing parts to
 make it work. Furthermore, more features, for example autorun and non-0 exit-code on failure, are included to make the
-usage more convenient. The tests can be run with gradle or even in automatically github actions see the
+usage more convenient. The tests can be run with gradle or even with github actions see the
 repositories' [build workflow file](https://github.com/2No2Name/McTester/blob/master/.github/workflows/build.yml).
 
 ## Usage as a dependency
