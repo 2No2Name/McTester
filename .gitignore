@@ -37,4 +37,6 @@ run/*
 !run/world/
 run/world/*
 !run/world/level.dat
-!run/mctester.properties
+!run/config
+run/config/*
+!run/config/mctester.properties

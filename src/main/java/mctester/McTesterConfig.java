@@ -34,7 +34,7 @@ public class McTesterConfig {
         shouldStayUpAfterFail = false;
 
         Properties properties = new Properties();
-        File file = new File("mctester.properties");
+        File file = new File("./config/mctester.properties");
         if (file.exists()) {
             try (FileInputStream in = new FileInputStream(file)) {
                 LOGGER.info("Found configuration file, loading properties!");
