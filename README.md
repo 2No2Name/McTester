@@ -14,7 +14,7 @@ be loaded at every startup e.g. `gradlew runClient` or `gradlew runServer`.
 
 ```
 dependencies {
-    modImplementation 'com.github.2No2Name:McTester:v0.1.0'
+    modImplementation 'com.github.2No2Name:McTester:VERSION_TAG_HERE'
 }
 
 repositories {
