@@ -29,8 +29,8 @@ public class Templates {
         //Need to use a GameTest->Object map here to avoid reusing the list when a test config is run again!
         WeakHashMap<GameTest, ArrayList<BlockPos>> emeraldBlockListStorage = new WeakHashMap<>();
 
-        //10 tick cooldown at the start to avoid accidental success condition activation due to redstone flickering
-        testConfig.repeatedActionsStart(10);
+        //10 tick delay at the start to avoid accidental success condition activation due to redstone flickering
+        testConfig.structurePlaceCooldown(10);
 
         //Replace all red terracotta with redstone block at the start
         testConfig.addAction(0, gameTest -> {
