@@ -16,7 +16,7 @@ jobs:
             11,   # Current Java LTS
             15    # Latest version
         ]
-        os: [ubuntu-20.04] # only run on linux as we expect no difference by platform anyways
+        os: [ ubuntu-latest ] # only run on linux as we expect no difference by platform anyways
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout repository
@@ -33,10 +33,11 @@ jobs:
       - name: build
         run: ./gradlew build
       - name: run test server
+        if: ${{ runner.os == 'Linux' && matrix.java == '11' }} # Only run test server once
         timeout-minutes: 5
         run: ./gradlew runServer
       - name: capture build artifacts
-        #if: ${{ runner.os == 'Linux' && matrix.java == '11' }} # Only upload artifacts built from LTS java on one OS
+        if: ${{ runner.os == 'Linux' && matrix.java == '11' }} # Only upload artifacts built from LTS java on one OS
         uses: actions/upload-artifact@v2
         with:
           name: Artifacts
