@@ -1,7 +1,10 @@
-package mctester.common;
+package mctester.common.testcreation;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import mctester.annotation.Test;
+import mctester.mixin.accessor.GameTestAccessor;
+import mctester.mixin.accessor.StartupParameterAccessor;
 import mctester.util.UnsafeUtil;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.StartupParameter;
@@ -57,18 +60,41 @@ public class TestConfig {
         );
     }
 
+    /**
+     * Adds the runnable to the test.
+     *
+     * @param startupParameter context of the test
+     * @param runnable         the runnable to add, we allow consuming the GameTest to allow more flexible runnables
+     * @param tick             the tick after startup the runnable should be run
+     */
+    public static void addRunnableToTick(StartupParameter startupParameter, Consumer<GameTest> runnable, long tick) {
+        GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
+        Object2LongMap<Runnable> runnableToTickMap = ((GameTestAccessor) gameTest).getField_21453();
+        runnableToTickMap.put(() -> runnable.accept(gameTest), tick);
+    }
+
+    public static void addRunnableToTickRange(StartupParameter startupParameter, Consumer<GameTest> runnable, int start, int end) {
+        GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
+        Object2LongMap<Runnable> runnableToTickMap = ((GameTestAccessor) gameTest).getField_21453();
+        for (int i = start; i <= end; i++) {
+            //due to the usage of a Map we need to create a new runnable every time:
+            Runnable runnable1 = () -> runnable.accept(gameTest);
+            runnableToTickMap.put(runnable1, i);
+        }
+    }
+
     public TestFunction toTestFunction() {
         Consumer<StartupParameter> extendedStarter = (t) -> {
             //schedule the Runnables/Consumers we want to run during the test.
             for (int tick : this.actionsByTick.keySet()) {
                 ArrayList<Consumer<GameTest>> actions = this.actionsByTick.get(tick);
                 if (actions != null && !actions.isEmpty()) {
-                    TestHelper.addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
+                    addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
                 }
             }
             //schedule the repeated actions to tick ranges
             if (!repeatedActions.isEmpty()) {
-                TestHelper.addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), this.repeatedActionsStart, this.timeout + 1);
+                addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), this.repeatedActionsStart, this.timeout + 1);
             }
 
             if (this.starter != null) {

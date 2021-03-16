@@ -1,10 +1,11 @@
 package mctester.annotation;
 
 import mctester.Templates;
-import mctester.common.TestConfig;
-import mctester.common.TestHelper;
+import mctester.common.testcreation.TestConfig;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.test.StructureTestUtil;
+import net.minecraft.test.TestFunction;
+import net.minecraft.test.TestFunctions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -89,7 +90,7 @@ public class TestRegistryHelper {
     public static void createTestForFile(String structureName, String templateName, Function<TestConfig, Stream<TestConfig>> testVariantCreator) {
         TestConfig baseConfig = new TestConfig().structureName(structureName);
         testVariantCreator.apply(baseConfig).forEach(
-                testConfig -> TestHelper.registerTest(testConfig.toTestFunction(), templateName)
+                testConfig -> registerTest(testConfig.toTestFunction(), templateName)
         );
     }
 
@@ -108,7 +109,7 @@ public class TestRegistryHelper {
                     (TestConfig testConfig) -> {
                         try {
                             method.invoke(null, testConfig);
-                            TestHelper.registerTest(testConfig.toTestFunction(), annotation.groupName());
+                            registerTest(testConfig.toTestFunction(), annotation.groupName());
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             throw new RuntimeException("Could not create tests!", e);
                         }
@@ -128,7 +129,14 @@ public class TestRegistryHelper {
 
     public static void createTests(Stream<TestConfig> testConfigs, Function<TestConfig, Stream<TestConfig>> variantCreator, String groupName) {
         testConfigs.flatMap(variantCreator).forEach(
-                testConfig -> TestHelper.registerTest(testConfig.toTestFunction(), groupName)
+                testConfig -> registerTest(testConfig.toTestFunction(), groupName)
         );
+    }
+
+    public static void registerTest(TestFunction testFunction, String className) {
+        TestFunctions.getTestFunctions().add(testFunction);
+        if (!className.equals("")) {
+            TestFunctions.getTestClasses().add(className);
+        }
     }
 }

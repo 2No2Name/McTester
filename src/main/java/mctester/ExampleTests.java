@@ -1,8 +1,8 @@
 package mctester;
 
 import mctester.annotation.Test;
-import mctester.common.TestActions;
-import mctester.common.TestConfig;
+import mctester.common.testcreation.TestActions;
+import mctester.common.testcreation.TestConfig;
 import mctester.util.GameTestUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;

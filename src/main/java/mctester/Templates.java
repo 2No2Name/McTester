@@ -1,8 +1,8 @@
 package mctester;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
-import mctester.common.TestActions;
-import mctester.common.TestConfig;
+import mctester.common.testcreation.TestActions;
+import mctester.common.testcreation.TestConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;

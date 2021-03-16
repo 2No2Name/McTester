@@ -1,4 +1,4 @@
-package mctester.common;
+package mctester.common.testcreation;
 
 import mctester.util.GameTestUtil;
 import net.minecraft.block.BlockState;
