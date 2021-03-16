@@ -1,6 +1,7 @@
 package mctester;
 
 import mctester.annotation.TestRegistryHelper;
+import mctester.util.StructureNBTConverter;
 import net.fabricmc.api.ModInitializer;
 
 public class McTesterMod implements ModInitializer {
@@ -10,7 +11,7 @@ public class McTesterMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		TestRegistryHelper.convertAllNbtToSnbt();
+		StructureNBTConverter.convertAllNbtToSnbt();
 
 		boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
 		TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
