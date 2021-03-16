@@ -11,6 +11,7 @@
     "after_test.crash_exit_code_fix.MinecraftServerMixin",
     "enable_testing.CommandManagerMixin",
     "enable_testing.MinecraftServerMixin",
+    "fixes.StructureTestListenerMixin",
     "startup.Autostart_MinecraftServerMixin",
     "startup.SharedConstantsMixin"
   ],
