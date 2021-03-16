@@ -26,12 +26,15 @@ public class ExampleTests {
         );
     }
 
-    @Test(structureName = "waterflow1", groupName = "example", rotation = {BlockRotation.CLOCKWISE_90, BlockRotation.CLOCKWISE_180, BlockRotation.COUNTERCLOCKWISE_90, BlockRotation.NONE})
+    @Test(
+            structureName = "waterflow1",
+            groupName = "example",
+            rotation = {BlockRotation.CLOCKWISE_90, BlockRotation.CLOCKWISE_180, BlockRotation.COUNTERCLOCKWISE_90, BlockRotation.NONE},
+            timeout = 100, //example: shorter cooldown, fail after 5 seconds of no success
+            cooldown = 0 //set a cooldown to allow firing observers etc. to stop before starting the test. We don't need that for waterflow.
+    )
     public static void waterflow1(TestConfig testConfig) {
-        //set a cooldown to allow firing observers etc. to stop before starting the test. We don't need that for waterflow.
         testConfig.structurePlaceCooldown(0);
-        //example: shorter cooldown, fail after 5 seconds of no success
-        testConfig.timeout(100);
 
         testConfig.addAction(0, new TestActions.SetBlockState(4, 3, 2, Blocks.WATER.getDefaultState()));
 
