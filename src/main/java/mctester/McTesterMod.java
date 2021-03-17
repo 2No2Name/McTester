@@ -16,12 +16,14 @@ public class McTesterMod implements ModInitializer {
 
 		StructureNBTConverter.convertAllNbtToSnbt();
 
-		boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
-		TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
-		TestRegistryHelper.createTestsFromClass(Example.class);
-		TestRegistryHelper.shouldWarnOnMissingStructureFile = tmp;
-		TestRegistryHelper.createTestsFromClass(MobAi.class);
-		TestRegistryHelper.createTestsFromClass(Minecarts.class);
+		if (McTesterConfig.shouldIncludeExampleTests()) {
+			boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
+			TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
+			TestRegistryHelper.createTestsFromClass(Example.class);
+			TestRegistryHelper.createTestsFromClass(MobAi.class);
+			TestRegistryHelper.createTestsFromClass(Minecarts.class);
+			TestRegistryHelper.shouldWarnOnMissingStructureFile = tmp;
+		}
 
 		TestRegistryHelper.createTemplatedTestsFromFiles();
 	}

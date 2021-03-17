@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.LongConsumer;
 
 @Mixin(GameTest.class)
-public class GameTestMixin implements GameTestHelper.GameTestHelperAccess {
+public class GameTestMixin implements GameTestHelper.GameTestAccess {
     private final GameTestHelper gameTestHelper = new GameTestHelper((GameTest) (Object) this);
     @Shadow
     private long tick;

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
@@ -22,6 +23,7 @@ public class McTesterConfig {
     private static boolean shouldStayUpAfterFail;
     private static long autorunShuffleSeed;
     private static boolean isDevelopment;
+    private static boolean includeExampleTests;
 
     static {
         LOGGER.info("Loading default config...");
@@ -32,6 +34,19 @@ public class McTesterConfig {
         shouldCrashOnFail = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
         shouldShutdownAfterTest = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
         shouldStayUpAfterFail = false;
+        includeExampleTests = true;
+
+        ArrayList<String> optionValues = new ArrayList<>();
+        optionValues.add("false");
+        optionValues.add("true");
+        optionValues.add("serveronly");
+        optionValues.add("clientonly");
+        boolean[] optionValueLookup = {
+                false,
+                true,
+                FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER,
+                FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT
+        };
 
         Properties properties = new Properties();
         File file = new File("./config/mctester.properties");
@@ -46,11 +61,11 @@ public class McTesterConfig {
 
             String autostartProperty = properties.getProperty("autostart");
             if (autostartProperty != null) {
-                shouldAutorun = Boolean.parseBoolean(autostartProperty);
+                shouldAutorun = optionValueLookup[Math.max(0, optionValues.indexOf(autostartProperty))];
             }
             String autostartShuffleProperty = properties.getProperty("autostart.shuffle");
             if (autostartShuffleProperty != null) {
-                shouldAutorunShuffle = Boolean.parseBoolean(autostartShuffleProperty);
+                shouldAutorunShuffle = optionValueLookup[Math.max(0, optionValues.indexOf(autostartShuffleProperty))];
             }
             String autostartShuffleSeedProperty = properties.getProperty("autostart.shuffle.seed");
             if (autostartShuffleSeedProperty != null) {
@@ -58,19 +73,23 @@ public class McTesterConfig {
             }
             String crashOnFailProperty = properties.getProperty("crashOnFail");
             if (crashOnFailProperty != null) {
-                shouldCrashOnFail = Boolean.parseBoolean(crashOnFailProperty);
+                shouldCrashOnFail = optionValueLookup[Math.max(0, optionValues.indexOf(crashOnFailProperty))];
             }
             String shutdownAfterTestProperty = properties.getProperty("shutdownAfterTest");
             if (shutdownAfterTestProperty != null) {
-                shouldShutdownAfterTest = Boolean.parseBoolean(shutdownAfterTestProperty);
+                shouldShutdownAfterTest = optionValueLookup[Math.max(0, optionValues.indexOf(shutdownAfterTestProperty))];
             }
             String stayUpAfterFailProperty = properties.getProperty("stayUpAfterFail");
             if (stayUpAfterFailProperty != null) {
-                shouldStayUpAfterFail = Boolean.parseBoolean(stayUpAfterFailProperty);
+                shouldStayUpAfterFail = optionValueLookup[Math.max(0, optionValues.indexOf(stayUpAfterFailProperty))];
             }
             String isDevelopmentProperty = properties.getProperty("isDevelopment");
             if (isDevelopmentProperty != null) {
-                isDevelopment = Boolean.parseBoolean(isDevelopmentProperty);
+                isDevelopment = optionValueLookup[Math.max(0, optionValues.indexOf(isDevelopmentProperty))];
+            }
+            String includeExampleTestsProperty = properties.getProperty("includeExampleTests");
+            if (includeExampleTestsProperty != null) {
+                includeExampleTests = optionValueLookup[Math.max(0, optionValues.indexOf(includeExampleTestsProperty))];
             }
         }
     }
@@ -101,5 +120,9 @@ public class McTesterConfig {
 
     public static boolean isDevelopment() {
         return isDevelopment;
+    }
+
+    public static boolean shouldIncludeExampleTests() {
+        return includeExampleTests;
     }
 }

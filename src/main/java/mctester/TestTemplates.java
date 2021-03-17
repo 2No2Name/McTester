@@ -6,6 +6,7 @@ import mctester.common.copy.PositionedException2;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
 import mctester.common.test.exceptions.GameTestAssertException;
+import mctester.common.util.GameTestUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
@@ -36,12 +37,12 @@ public class TestTemplates {
     /**
      * A test function that can be used to create tests with a simple redstone interface.
      */
-    @GameTest()
+    @GameTest
     public static void test_redstone(GameTestHelper helper) {
         ArrayList<BlockPos> emeraldBlockList = new ArrayList<>();
 
         //Replace all red terracotta with redstone block at the start and fill the emerald block list
-        helper.streamPositions().forEach(blockPos -> {
+        GameTestUtil.streamPositions(helper.gameTest).forEach(blockPos -> {
             BlockState blockState = helper.gameTest.getWorld().getBlockState(blockPos);
             if (blockState.isOf(Blocks.RED_TERRACOTTA)) {
                 helper.gameTest.getWorld().setBlockState(blockPos, Blocks.REDSTONE_BLOCK.getDefaultState());

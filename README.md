@@ -46,17 +46,18 @@ See the test [templates file](https://github.com/2No2Name/McTester/blob/master/s
 
 The following options can changed in the mctester.properties config text file. You may need to create the file manually.
 
-Format: option=defaultValue
+Format: `option=VALUE`, possible values: `true`, `serveronly`, `clientonly`, `false`  
+Defaults:
 
-- `autostart=true` Automatically runs all tests when a world is loaded.
+- `autostart=false` Automatically runs all tests when a world is loaded.
 - `autostart.shuffle=true` Shuffles the tests before automatically running them.
-- `autostart.shuffle.seed` Set the shuffle seed for debug purposes. By default, a random seed is used.
-- `crashOnFail` Automatically crashes the server when any test fails. By default, enabled on servers and disabled on the
-  client.
-- `shutdownAfterTest` Automatically shut down the server after the tests finished. By default, enabled on servers and
-  disabled on the client.
+- `autostart.shuffle.seed` Set the shuffle seed for debug purposes. When this option is not defined, a random seed is
+  used.
+- `crashOnFail=false` Automatically crashes the server when any test fails.
+- `shutdownAfterTest=false` Automatically shut down the server after the tests finished.
 - `stayUpAfterFail=false` Do not shutdown the server if a test failed.
 - `isDevelopment=false` Sets Minecraft's SharedConstants.isDevelopment field if true.
+- `includeExampleTests=false` Loads example test functions defined by this mod. Templates are always loaded.
 
 ## Setup for development
 

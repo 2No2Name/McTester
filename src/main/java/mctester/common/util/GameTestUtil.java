@@ -18,6 +18,7 @@ import net.minecraft.util.math.*;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class GameTestUtil {
     public static BlockBox getTestBlockBox(GameTest gameTest) {
@@ -57,7 +58,6 @@ public class GameTestUtil {
         return Structure.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
-
     public static List<Entity> getEntitiesInTestArea(GameTest e) {
         return e.getWorld().getOtherEntities(null, GameTestUtil.getTestBox(e));
     }
@@ -66,7 +66,6 @@ public class GameTestUtil {
         box = transformBox(e, box);
         return e.getWorld().getOtherEntities(null, GameTestUtil.transformBox(e, box));
     }
-
 
     public static <T extends Entity> List<T> getEntitiesInBox(GameTest e, EntityType<T> entityType, Box box) {
         box = transformBox(e, box);
@@ -134,6 +133,10 @@ public class GameTestUtil {
         BlockPos blockPos2 = new BlockPos(x, y, z);
         BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         return serverWorld.getBlockState(blockPos3).rotate(getInverse(gameTest.getRotation()));
+    }
+
+    public static Stream<BlockPos> streamPositions(GameTest gameTest) {
+        return BlockPos.stream(GameTestUtil.getTestBlockBox(gameTest));
     }
 
     public static BlockRotation getInverse(BlockRotation blockRotation) {

@@ -25,5 +25,4 @@ public @interface GameTest {
 
     int repetitions() default 1;
     int requiredSuccessCount() default 1;
-    int repeatedActionsStart() default 1;
 }

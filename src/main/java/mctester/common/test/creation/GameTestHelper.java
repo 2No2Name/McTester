@@ -5,10 +5,15 @@ import mctester.common.copy.PositionedException2;
 import mctester.common.test.exceptions.GameTestAssertException;
 import mctester.common.test.exceptions.NotEvaluatedException;
 import mctester.common.util.GameTestUtil;
+import mctester.mixin.accessor.BrainAccessor;
+import mctester.mixin.accessor.GoalSelectorAccessor;
+import mctester.mixin.accessor.MobEntityAccessor;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.test.GameTest;
@@ -22,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.*;
-import java.util.stream.Stream;
 
 public class GameTestHelper {
     private static final Random RAND = new Random();
@@ -35,8 +39,8 @@ public class GameTestHelper {
 
     public GameTestHelper(GameTest gameTest) {
         this.gameTest = gameTest;
-        if (this.gameTest instanceof GameTestHelperAccess) {
-            ((GameTestHelperAccess) this.gameTest).setTickCallback(this::handleTick);
+        if (this.gameTest instanceof GameTestAccess) {
+            ((GameTestAccess) this.gameTest).setTickCallback(this::handleTick);
         }
         this.repeatedActions = new ArrayList<>();
         this.tickActions = new Long2ReferenceOpenHashMap<>();
@@ -162,9 +166,10 @@ public class GameTestHelper {
     }
 
     public void walkTo(MobEntity mob, BlockPos targetPos) {
-        //todo fix this, doesn't seem to work
+        mob.setOnGround(true);
         targetPos = GameTestUtil.transformPos(this.gameTest, targetPos);
-        mob.getNavigation().startMovingTo(targetPos.getX() + 0.5D, targetPos.getY(), targetPos.getZ() + 0.5D, 1D);
+        Path pathTo = mob.getNavigation().findPathTo(targetPos.getX() + 0.5D, targetPos.getY() + 1, targetPos.getZ() + 0.5D, 0);
+        mob.getNavigation().startMovingAlong(pathTo, 0.5D);
     }
 
     public void walkTo(MobEntity mob, double x, double y, double z) {
@@ -172,9 +177,15 @@ public class GameTestHelper {
         mob.getNavigation().startMovingTo(pos.x, pos.y, pos.z, 1D);
     }
 
-    public <T extends Entity> T spawnWithNoFreeWill(EntityType<T> entityType, int x, int y, int z) {
+    public <T extends MobEntity> T spawnWithNoFreeWill(EntityType<T> entityType, int x, int y, int z) {
         T entity = spawnEntity(x, y, z, entityType);
-        //todo make entity have no free will
+
+        //mobs have lots of brain, cut out the selection of tasks and goals
+        Brain<?> brain = entity.getBrain();
+        ((BrainAccessor<?>) brain).getTasks().clear();
+        ((GoalSelectorAccessor) ((MobEntityAccessor) entity).getTargetSelector()).getGoals().clear();
+        ((GoalSelectorAccessor) ((MobEntityAccessor) entity).getGoalSelector()).getGoals().clear();
+
         return entity;
     }
 
@@ -241,11 +252,7 @@ public class GameTestHelper {
         return GameTestUtil.getEntitiesInTestArea(this.gameTest);
     }
 
-    public Stream<BlockPos> streamPositions() {
-        return BlockPos.stream(GameTestUtil.getTestBlockBox(this.gameTest));
-    }
-
-    public interface GameTestHelperAccess {
+    public interface GameTestAccess {
         GameTestHelper getGameTestHelper();
 
         void setTickCallback(LongConsumer handler);
