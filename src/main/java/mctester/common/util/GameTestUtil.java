@@ -1,4 +1,4 @@
-package mctester.util;
+package mctester.common.util;
 
 import mctester.mixin.accessor.GameTestAccessor;
 import net.minecraft.block.BlockState;
@@ -14,12 +14,10 @@ import net.minecraft.test.GameTest;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public class GameTestUtil {
     public static BlockBox getTestBlockBox(GameTest gameTest) {
@@ -35,10 +33,28 @@ public class GameTestUtil {
         Vec3d corner1 = new Vec3d(box.minX, box.minY, box.minZ);
         Vec3d corner2 = new Vec3d(box.maxX, box.maxY, box.maxZ);
 
-        //transform the position so the spawning works
         corner1 = Structure.transformAround(corner1.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         corner2 = Structure.transformAround(corner2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         return new Box(corner1, corner2);
+    }
+
+    public static Vec3d transformPos(GameTest gameTest, Vec3d pos) {
+        BlockPos basePos = gameTest.getPos();
+        return Structure.transformAround(pos.add(basePos.getX(), basePos.getY(), basePos.getZ()), BlockMirror.NONE, gameTest.getRotation(), basePos);
+    }
+
+    public static Vec3d transformPos(GameTest gameTest, double x, double y, double z) {
+        return transformPos(gameTest, new Vec3d(x, y, z));
+    }
+
+    public static BlockPos transformPos(GameTest gameTest, Vec3i pos) {
+        BlockPos blockPos = gameTest.getPos();
+        return Structure.transformAround(blockPos.add(pos), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+    }
+
+    public static BlockPos transformPos(GameTest gameTest, int x, int y, int z) {
+        BlockPos blockPos = gameTest.getPos();
+        return Structure.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
 
@@ -47,17 +63,32 @@ public class GameTestUtil {
     }
 
     public static List<Entity> getEntitiesInBox(GameTest e, Box box) {
+        box = transformBox(e, box);
         return e.getWorld().getOtherEntities(null, GameTestUtil.transformBox(e, box));
     }
 
-    public static void spawnEntityWithTransforms(GameTest gameTest, double x, double y, double z, EntityType<? extends Entity> entityType, CompoundTag entityTag) {
+
+    public static <T extends Entity> List<T> getEntitiesInBox(GameTest e, EntityType<T> entityType, Box box) {
+        box = transformBox(e, box);
+        return e.getWorld().getEntitiesByType(entityType, box, t -> true);
+    }
+
+    public static <T extends Entity> List<T> getEntitiesInBox(GameTest e, EntityType<T> entityType, Box box, Predicate<T> entityPredicate) {
+        box = transformBox(e, box);
+        if (entityPredicate == null) {
+            entityPredicate = t -> true;
+        }
+        return e.getWorld().getEntitiesByType(entityType, box, entityPredicate);
+    }
+
+    public static <T extends Entity> T spawnEntityWithTransforms(GameTest gameTest, double x, double y, double z, EntityType<T> entityType, CompoundTag entityTag) {
         ServerWorld serverWorld = gameTest.getWorld();
-        Entity entity = entityType.create(serverWorld);
+        T entity = entityType.create(serverWorld);
         if (entity == null) {
             throw new IllegalStateException("Could not create entity of Type " + entityType);
         }
         if (entity instanceof MobEntity) {
-            ((MobEntity)entity).initialize(serverWorld, serverWorld.getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
+            ((MobEntity) entity).initialize(serverWorld, serverWorld.getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
         }
 
         if (entityTag != null) {
@@ -86,6 +117,7 @@ public class GameTestUtil {
         }
         entity.refreshPositionAndAngles(pos3.getX(), pos3.getY(), pos3.getZ(), yaw, entity.pitch);
         serverWorld.spawnEntity(entity);
+        return entity;
     }
 
     public static void setBlockStateWithTransforms(GameTest gameTest, int x, int y, int z, BlockState blockState) {

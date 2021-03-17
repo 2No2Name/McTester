@@ -1,7 +1,8 @@
 package mctester.annotation;
 
-import mctester.Templates;
-import mctester.common.testcreation.TestConfig;
+import mctester.TestTemplates;
+import mctester.common.test.creation.GameTestHelper;
+import mctester.common.test.creation.TestConfig;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
@@ -14,6 +15,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -22,7 +24,7 @@ public class TestRegistryHelper {
     public static boolean shouldWarnOnMissingStructureFile = true;
 
     public static void createTestsFromClass(Class<?> clazz) {
-        Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getAnnotation(Test.class) != null || m.getAnnotation(Tests.class) != null).forEach(TestRegistryHelper::createTestFromMethod);
+        Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getAnnotation(GameTest.class) != null || m.getAnnotation(GameTests.class) != null).forEach(TestRegistryHelper::createTestFromMethod);
     }
 
     public static void createTemplatedTestsFromFiles() {
@@ -39,63 +41,52 @@ public class TestRegistryHelper {
                 continue;
             }
             String templateName = structureName.substring(0, dotIndex);
-            Function<TestConfig, Stream<TestConfig>> testVariantCreator = Templates.TEST_TEMPLATES.get(templateName);
-            if (testVariantCreator != null) {
-                createTestForFile(structureName, templateName, testVariantCreator);
+            Function<String, Stream<TestConfig>> testInitializer = TestTemplates.TEST_TEMPLATES.get(templateName);
+            if (testInitializer != null) {
+                createTestForFile(structureName, templateName, testInitializer);
             }
         }
     }
 
     public static void createTestFromMethod(Method method) {
-        Tests multiAnnotation = method.getAnnotation(Tests.class);
+        GameTests multiAnnotation = method.getAnnotation(GameTests.class);
         if (multiAnnotation != null) {
-            for (Test annotation : multiAnnotation.value()) {
+            for (GameTest annotation : multiAnnotation.value()) {
                 createTest(method, annotation);
             }
         } else {
-            Test annotation = method.getAnnotation(Test.class);
+            GameTest annotation = method.getAnnotation(GameTest.class);
             createTest(method, annotation);
         }
     }
 
-    public static void createTestForFile(String structureName, String templateName, Function<TestConfig, Stream<TestConfig>> testVariantCreator) {
-        TestConfig baseConfig = new TestConfig().structureName(structureName);
-        testVariantCreator.apply(baseConfig).forEach(
+    public static void createTestForFile(String structureName, String templateName, Function<String, Stream<TestConfig>> testInitializer) {
+        testInitializer.apply(structureName).forEach(
                 testConfig -> registerTest(testConfig.toTestFunction(), templateName)
         );
     }
 
-    public static void createTest(Method method, Test annotation) {
-        Stream<TestConfig> testConfigs = TestConfig.from(annotation);
+    public static void createTest(Method method, GameTest annotation) {
+        String structurePathName = TestAnnotationHelper.getGroupName(annotation, method) + "." + TestAnnotationHelper.getStructureName(annotation, method);
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
-        Path structurePath = path.resolve(annotation.groupName() + "." + annotation.structureName() + ".snbt");
+        Path structurePath = path.resolve(structurePathName + ".snbt");
         if (!structurePath.toFile().exists()) {
             if (shouldWarnOnMissingStructureFile) {
                 LOGGER.warn("Structure for test not found: Method name: " + method.getName() + " Structure path: " + structurePath + " . Removing test!");
             }
             return;
         }
-        if (method.getReturnType() == void.class) {
-            testConfigs.forEach(
-                    (TestConfig testConfig) -> {
-                        try {
-                            method.invoke(null, testConfig);
-                            registerTest(testConfig.toTestFunction(), annotation.groupName());
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException("Could not create tests!", e);
-                        }
-                    });
-        } else {
-            Function<TestConfig, Stream<TestConfig>> variantCreator = testConfig -> {
-                try {
-                    //noinspection unchecked
-                    return (Stream<TestConfig>) method.invoke(null, testConfig);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("Could not create tests!", e);
-                }
-            };
-            createTests(testConfigs, variantCreator, annotation.groupName());
-        }
+        Consumer<GameTestHelper> startupFunction = gameTestHelper -> {
+            try {
+                method.invoke(null, gameTestHelper);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                LOGGER.warn("Startup function invocation crashes!");
+                throw new RuntimeException("Error when invoking test startup function! Method name: " + method.getName() + " Structure path: " + structurePath, e);
+            }
+        };
+        Stream<TestConfig> testConfigs = TestConfig.from(annotation, structurePathName, startupFunction);
+        testConfigs.forEach(testConfig ->
+                registerTest(testConfig.toTestFunction(), TestAnnotationHelper.getGroupName(annotation, method)));
     }
 
     public static void createTests(Stream<TestConfig> testConfigs, Function<TestConfig, Stream<TestConfig>> variantCreator, String groupName) {

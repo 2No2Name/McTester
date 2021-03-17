@@ -1,18 +1,18 @@
-package mctester.common.testcreation;
+package mctester.common.test.creation;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import mctester.annotation.Test;
+import mctester.annotation.GameTest;
+import mctester.common.util.UnsafeUtil;
 import mctester.mixin.accessor.GameTestAccessor;
 import mctester.mixin.accessor.StartupParameterAccessor;
-import mctester.util.UnsafeUtil;
-import net.minecraft.test.GameTest;
 import net.minecraft.test.StartupParameter;
 import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -26,35 +26,37 @@ public class TestConfig {
     private int timeout = 400; //time after which the test automatically fails
     private boolean required = true;
     private BlockRotation rotation = BlockRotation.NONE;
-    private Consumer<StartupParameter> starter;
     private int repetitions;
     private int requiredSuccessCount;
 
-    private final Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick = new Int2ObjectOpenHashMap<>();
-    private final ArrayList<Consumer<GameTest>> repeatedActions = new ArrayList<>();
+    private final Int2ObjectOpenHashMap<ArrayList<Consumer<net.minecraft.test.GameTest>>> actionsByTick = new Int2ObjectOpenHashMap<>();
+    private final ArrayList<Consumer<net.minecraft.test.GameTest>> repeatedActions = new ArrayList<>();
+    private Consumer<StartupParameter> starter;
     private int repeatedActionsStart = 1;
 
 
-    public TestConfig() {
-
+    public TestConfig(Consumer<GameTestHelper> testStartupFunction) {
+        this.starter = startupParameter -> testStartupFunction.accept(
+                new GameTestHelper(((StartupParameterAccessor) startupParameter).getTest())
+        );
     }
 
-    public static Stream<TestConfig> from(Test annotation) {
-        String structurePath = annotation.groupName();
-        if (!structurePath.equals("")) {
-            structurePath = structurePath + ".";
-        }
-        String structureName = structurePath + annotation.structureName();
+    public TestConfig(List<Consumer<GameTestHelper>> testStartupFunctions) {
+        this.starter = startupParameter -> testStartupFunctions.forEach(
+                gameTestHelperConsumer -> gameTestHelperConsumer.accept(new GameTestHelper(((StartupParameterAccessor) startupParameter).getTest()))
+        );
+    }
 
+    public static Stream<TestConfig> from(GameTest annotation, String structurePathName, Consumer<GameTestHelper> testStartupFunction) {
         return Arrays.stream(annotation.rotation()).map(
-                blockRotation -> new TestConfig()
+                blockRotation -> new TestConfig(testStartupFunction)
                         .rotation(blockRotation)
                         .required(annotation.required())
                         .batchId(annotation.batchId())
                         .structurePlaceCooldown(annotation.cooldown())
-//                .structurePath(structurePath) //todo for some reason using path = name seems to work better at the time of writing (1.17 snapshots)
-                        .structureName(structureName)
-                        .timeout(annotation.timeout())
+//                .structurePath(structurePath) //for some reason using path = name seems to work better at the time of writing (1.17 snapshots)
+                        .structureName(structurePathName)
+                        .timeout(annotation.timeoutTicks())
                         .repetitions(annotation.repetitions()).requiredSuccessCount(annotation.requiredSuccessCount())
                         .repeatedActionsStart(annotation.repeatedActionsStart())
         );
@@ -67,14 +69,16 @@ public class TestConfig {
      * @param runnable         the runnable to add, we allow consuming the GameTest to allow more flexible runnables
      * @param tick             the tick after startup the runnable should be run
      */
-    public static void addRunnableToTick(StartupParameter startupParameter, Consumer<GameTest> runnable, long tick) {
-        GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
+    @Deprecated
+    public static void addRunnableToTick(StartupParameter startupParameter, Consumer<net.minecraft.test.GameTest> runnable, long tick) {
+        net.minecraft.test.GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
         Object2LongMap<Runnable> runnableToTickMap = ((GameTestAccessor) gameTest).getField_21453();
         runnableToTickMap.put(() -> runnable.accept(gameTest), tick);
     }
 
-    public static void addRunnableToTickRange(StartupParameter startupParameter, Consumer<GameTest> runnable, int start, int end) {
-        GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
+    @Deprecated
+    public static void addRunnableToTickRange(StartupParameter startupParameter, Consumer<net.minecraft.test.GameTest> runnable, int start, int end) {
+        net.minecraft.test.GameTest gameTest = ((StartupParameterAccessor) startupParameter).getTest();
         Object2LongMap<Runnable> runnableToTickMap = ((GameTestAccessor) gameTest).getField_21453();
         for (int i = start; i <= end; i++) {
             //due to the usage of a Map we need to create a new runnable every time:
@@ -87,14 +91,14 @@ public class TestConfig {
         Consumer<StartupParameter> extendedStarter = (t) -> {
             //schedule the Runnables/Consumers we want to run during the test.
             for (int tick : this.actionsByTick.keySet()) {
-                ArrayList<Consumer<GameTest>> actions = this.actionsByTick.get(tick);
+                ArrayList<Consumer<net.minecraft.test.GameTest>> actions = this.actionsByTick.get(tick);
                 if (actions != null && !actions.isEmpty()) {
-                    addRunnableToTick(t, (GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
+                    addRunnableToTick(t, (net.minecraft.test.GameTest e) -> actions.forEach(action -> action.accept(e)), tick);
                 }
             }
             //schedule the repeated actions to tick ranges
             if (!repeatedActions.isEmpty()) {
-                addRunnableToTickRange(t, (GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), this.repeatedActionsStart, this.timeout + 1);
+                addRunnableToTickRange(t, (net.minecraft.test.GameTest e) -> repeatedActions.forEach(action -> action.accept(e)), this.repeatedActionsStart, this.timeout + 1);
             }
 
             if (this.starter != null) {
@@ -106,6 +110,7 @@ public class TestConfig {
         return UnsafeUtil.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, extendedStarter, this.timeout, this.cooldown, this.rotation, this.repetitions, this.requiredSuccessCount);
     }
 
+    @Deprecated
     public TestConfig startWith(Consumer<StartupParameter> starter) {
         if (this.starter != null) {
             throw new IllegalStateException("Can only have one starter!");
@@ -159,9 +164,9 @@ public class TestConfig {
         return this;
     }
 
-
-    public TestConfig addAction(int tick, Consumer<GameTest> action) {
-        ArrayList<Consumer<GameTest>> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));
+    @Deprecated
+    public TestConfig addAction(int tick, Consumer<net.minecraft.test.GameTest> action) {
+        ArrayList<Consumer<net.minecraft.test.GameTest>> actions = this.actionsByTick.computeIfAbsent(tick, (integer -> new ArrayList<>()));
         actions.add(action);
         return this;
     }
@@ -171,12 +176,14 @@ public class TestConfig {
         return this;
     }
 
-    public TestConfig addRepeatedAction(Consumer<GameTest> action) {
+    @Deprecated
+    public TestConfig addRepeatedAction(Consumer<net.minecraft.test.GameTest> action) {
         this.repeatedActions.add(action);
         return this;
     }
 
-    public TestConfig addSuccessCondition(Function<GameTest, Boolean> successCondition) {
+    @Deprecated
+    public TestConfig addSuccessCondition(Function<net.minecraft.test.GameTest, Boolean> successCondition) {
         this.repeatedActions.add(e -> {
             if (successCondition.apply(e)) {
                 e.fail(null);
@@ -185,48 +192,13 @@ public class TestConfig {
         return this;
     }
 
-    public TestConfig addFailCondition(Function<GameTest, Boolean> failCondition, String message) {
+    @Deprecated
+    public TestConfig addFailCondition(Function<net.minecraft.test.GameTest, Boolean> failCondition, String message) {
         this.repeatedActions.add(e -> {
             if (failCondition.apply(e)) {
                 e.fail(new Exception(message));
             }
         });
-        return this;
-    }
-
-    public TestConfig deepCopy() {
-        return new TestConfig()
-                .rotation(this.rotation)
-                .required(this.required)
-                .batchId(this.batchId)
-                .structurePlaceCooldown(this.cooldown)
-                .structurePath(this.structurePath)
-                .structureName(this.structureName)
-                .timeout(this.timeout)
-                .repetitions(this.repetitions)
-                .requiredSuccessCount(this.requiredSuccessCount)
-                .repeatedActionsStart(this.repeatedActionsStart)
-                .copyRepeatedActions(this.repeatedActions)
-                .copyActionsByTick(this.actionsByTick)
-                .copyStarter(this.starter);
-
-    }
-
-    private TestConfig copyStarter(Consumer<StartupParameter> starter) {
-        this.starter = starter;
-        return this;
-    }
-
-    private TestConfig copyActionsByTick(Int2ObjectOpenHashMap<ArrayList<Consumer<GameTest>>> actionsByTick) {
-        this.actionsByTick.clear();
-        //noinspection unchecked
-        actionsByTick.forEach((key, value) -> this.actionsByTick.put((int) key, (ArrayList<Consumer<GameTest>>) value.clone()));
-        return this;
-    }
-
-    private TestConfig copyRepeatedActions(ArrayList<Consumer<GameTest>> repeatedActions) {
-        this.repeatedActions.clear();
-        this.repeatedActions.addAll(repeatedActions);
         return this;
     }
 }

@@ -1,4 +1,4 @@
-package mctester.util;
+package mctester.common.util;
 
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.test.StructureTestUtil;

@@ -1,5 +1,6 @@
 package mctester.common.copy;
 
+import mctester.common.util.GameTestUtil;
 import net.minecraft.structure.Structure;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TimeMismatchException;
@@ -15,10 +16,11 @@ public class PositionedException2 extends TimeMismatchException {
     private final BlockPos relativePos;
     private final long testTick;
 
-    public PositionedException2(String message, BlockPos absolutePos, BlockPos relativePos, long testTick) {
+    public PositionedException2(String message, BlockPos absolutePos, GameTest gameTest, long testTick) {
         super(message);
         this.pos = absolutePos;
-        this.relativePos = relativePos;
+        BlockPos blockPos = gameTest.getPos();
+        this.relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
         this.testTick = testTick;
     }
 
