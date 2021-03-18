@@ -3,7 +3,7 @@ package mctester.common.test.creation;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
 import mctester.common.copy.PositionedException2;
 import mctester.common.test.exceptions.GameTestAssertException;
-import mctester.common.test.exceptions.NotEvaluatedException;
+import mctester.common.test.exceptions.PreconditionNotMetException;
 import mctester.common.util.GameTestUtil;
 import mctester.mixin.accessor.BrainAccessor;
 import mctester.mixin.accessor.GoalSelectorAccessor;
@@ -28,13 +28,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.*;
 
+@SuppressWarnings("unused")
 public class GameTestHelper {
     private static final Random RAND = new Random();
 
     public final GameTest gameTest;
     private final ArrayList<BiConsumer<GameTestHelper, Long>> repeatedActions;
     private final Long2ReferenceOpenHashMap<Consumer<GameTestHelper>> tickActions;
-    private final ArrayList<Supplier<RuntimeException>> failReasons;
+    private final ArrayList<Function<GameTestHelper, RuntimeException>> failReasons;
     public long currTick;
 
     public GameTestHelper(GameTest gameTest) {
@@ -64,9 +65,14 @@ public class GameTestHelper {
     }
 
     private void handleTimeout() {
-        if (!this.failReasons.isEmpty()) {
-            this.gameTest.fail(this.failReasons.get(RAND.nextInt(this.failReasons.size())).get());
+        RuntimeException runtimeException = null;
+        while (runtimeException == null) {
+            if (this.failReasons.isEmpty()) {
+                return;
+            }
+            runtimeException = this.failReasons.remove(RAND.nextInt(this.failReasons.size())).apply(this);
         }
+        this.gameTest.fail(runtimeException);
     }
 
     public void addAction(long tick, Consumer<GameTestHelper> action) {
@@ -92,8 +98,8 @@ public class GameTestHelper {
                             if (isSuccess) {
                                 this.gameTest.fail(null);
                             }
-                        } catch (NotEvaluatedException ignored) {
-                        } catch (GameTestAssertException e) {
+                        } catch (PreconditionNotMetException ignored) {
+                        } catch (Exception e) {
                             this.gameTest.fail(e);
                         }
                     }
@@ -101,7 +107,7 @@ public class GameTestHelper {
         );
     }
 
-    public void succeedWhen(BooleanSupplier successCondition, Supplier<RuntimeException> timeoutException) {
+    public void succeedWhen(BooleanSupplier successCondition, Function<GameTestHelper, RuntimeException> timeoutException) {
         this.succeedWhen(successCondition);
         if (timeoutException != null) {
             this.failReasons.add(timeoutException);
@@ -117,7 +123,7 @@ public class GameTestHelper {
                             if (isSuccess) {
                                 this.gameTest.fail(null);
                             }
-                        } catch (NotEvaluatedException ignored) {
+                        } catch (PreconditionNotMetException ignored) {
                         } catch (GameTestAssertException e) {
                             this.gameTest.fail(e);
                         }
@@ -126,7 +132,7 @@ public class GameTestHelper {
         );
     }
 
-    public void succeedWhen(Function<GameTestHelper, Boolean> successCondition, Supplier<RuntimeException> timeoutException) {
+    public void succeedWhen(Function<GameTestHelper, Boolean> successCondition, Function<GameTestHelper, RuntimeException> timeoutException) {
         this.succeedWhen(successCondition);
         if (timeoutException != null) {
             this.failReasons.add(timeoutException);
@@ -142,7 +148,7 @@ public class GameTestHelper {
                             if (isSuccess) {
                                 this.gameTest.fail(null);
                             }
-                        } catch (NotEvaluatedException ignored) {
+                        } catch (PreconditionNotMetException ignored) {
                         } catch (GameTestAssertException e) {
                             this.gameTest.fail(e);
                         }
@@ -151,7 +157,7 @@ public class GameTestHelper {
         );
     }
 
-    public void succeedWhen(BiFunction<GameTestHelper, Long, Boolean> successCondition, Supplier<RuntimeException> timeoutException) {
+    public void succeedWhen(BiFunction<GameTestHelper, Long, Boolean> successCondition, Function<GameTestHelper, RuntimeException> timeoutException) {
         this.succeedWhen(successCondition);
         if (timeoutException != null) {
             this.failReasons.add(timeoutException);
@@ -161,7 +167,7 @@ public class GameTestHelper {
     public <T extends Entity> void assertEntityPresent(EntityType<T> entityType, BlockPos targetPos) {
         List<T> entitiesInBox = GameTestUtil.getEntitiesInBox(this.gameTest, entityType, new Box(targetPos, targetPos.add(1, 1, 1)));
         if (entitiesInBox.isEmpty()) {
-            throw NotEvaluatedException.INSTANCE; //hack to get the same behavior as in the video (https://www.youtube.com/watch?v=vXaWOJTCYNg (11:15))
+            throw PreconditionNotMetException.INSTANCE; //hack to get the same behavior as in the video (https://www.youtube.com/watch?v=vXaWOJTCYNg (11:15))
         }
     }
 
@@ -236,7 +242,7 @@ public class GameTestHelper {
                         !GameTestUtil.getEntitiesInBox(
                                 this.gameTest, entityType, new Box(x, y, z, x + 1, y + 1, z + 1)
                         ).isEmpty(),
-                () -> new PositionedException2("Expected " + entityType.getName().getString(), this.gameTest, new BlockPos(x, y, z), this.currTick)
+                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(x, y, z), helper.currTick)
         );
     }
 

@@ -56,13 +56,13 @@ public class TestTemplates {
         }
 
         //Succeed when any powered note block is on top of an emerald block. Assume the emerald block doesn't move etc.
-        helper.succeedWhen(() ->
-                        emeraldBlockList.stream().anyMatch(blockPos -> {
-                            BlockState blockState = helper.gameTest.getWorld().getBlockState(blockPos.up());
-                            return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
-                                    helper.gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
-                        }),
-                () -> new PositionedException2("Expected powered noteblock on top of an emerald block. For example", emeraldBlockList.get(0), helper.gameTest, helper.currTick)
+        helper.succeedWhen(
+                helper1 -> emeraldBlockList.stream().anyMatch(blockPos -> {
+                    BlockState blockState = helper1.gameTest.getWorld().getBlockState(blockPos.up());
+                    return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
+                            helper1.gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
+                }),
+                helper1 -> new PositionedException2("Expected powered noteblock on top of an emerald block. For example", emeraldBlockList.get(0), helper1.gameTest, helper1.currTick)
         );
     }
 }

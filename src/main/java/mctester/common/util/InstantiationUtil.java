@@ -9,15 +9,15 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
 
-public class UnsafeUtil {
-    private static Unsafe unsafe;
+public class InstantiationUtil {
+    private static Unsafe theUnsafe;
 
     static {
         Field unsafeField;
         try {
             unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
-            UnsafeUtil.unsafe = (Unsafe) unsafeField.get(null);
+            InstantiationUtil.theUnsafe = (Unsafe) unsafeField.get(null);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             throw new IllegalStateException("McTester: Could not get Unsafe!", e);
@@ -26,7 +26,7 @@ public class UnsafeUtil {
 
     public static TestFunction createTestFunction(String batchId, String structurePath, String structureName, boolean required, Consumer<StartupParameter> starter, int tickLimit, long duration, BlockRotation field_25306, int repetitions, int requiredSuccessCount) {
         try {
-            TestFunctionAccessor testFunction = (TestFunctionAccessor) unsafe.allocateInstance(TestFunction.class);
+            TestFunctionAccessor testFunction = (TestFunctionAccessor) theUnsafe.allocateInstance(TestFunction.class);
             testFunction.setBatchId(batchId);
             testFunction.setStructurePath(structurePath);
             testFunction.setStructureName(structureName);

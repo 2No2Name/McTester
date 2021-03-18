@@ -1,7 +1,7 @@
 package mctester.common.test.creation;
 
 import mctester.annotation.GameTest;
-import mctester.common.util.UnsafeUtil;
+import mctester.common.util.InstantiationUtil;
 import mctester.mixin.accessor.StartupParameterAccessor;
 import net.minecraft.test.StartupParameter;
 import net.minecraft.test.TestFunction;
@@ -48,7 +48,7 @@ public class TestConfig {
 
     public TestFunction toTestFunction() {
         //todo fix using structureName twice here! But for some reason it is actually working best like this.
-        return UnsafeUtil.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, this.starter, this.timeout, this.cooldown, this.rotation, this.repetitions, this.requiredSuccessCount);
+        return InstantiationUtil.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, this.starter, this.timeout, this.cooldown, this.rotation, this.repetitions, this.requiredSuccessCount);
     }
 
     public TestConfig batchId(String batchId) {
