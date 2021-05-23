@@ -15,7 +15,12 @@
     "after_test.crash_exit_code_fix.MinecraftServerMixin",
     "enable_testing.CommandManagerMixin",
     "enable_testing.MinecraftServerMixin",
-    "fixes.StructureTestListenerMixin",
+    "fixes.export.TestCommandMixin",
+    "fixes.function_lookup.GameTestMixin",
+    "fixes.function_lookup.TestCommandMixin",
+    "fixes.function_lookup.TestRunnerMixin",
+    "fixes.rotation.TestCommandMixin",
+    "fixes.test_exceptions.StructureTestListenerMixin",
     "startup.Autostart_MinecraftServerMixin",
     "startup.SharedConstantsMixin"
   ],

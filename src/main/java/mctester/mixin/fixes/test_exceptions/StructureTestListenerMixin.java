@@ -1,4 +1,4 @@
-package mctester.mixin.fixes;
+package mctester.mixin.fixes.test_exceptions;
 
 import mctester.common.copy.PositionedException2;
 import net.minecraft.server.world.ServerWorld;

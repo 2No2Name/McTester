@@ -24,5 +24,8 @@ public @interface GameTest {
     BlockRotation[] rotation() default {BlockRotation.NONE};
 
     int repetitions() default 1;
+
     int requiredSuccessCount() default 1;
+
+    int numVariants() default 1;
 }

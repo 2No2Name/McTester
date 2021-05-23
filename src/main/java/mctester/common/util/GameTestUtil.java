@@ -2,6 +2,7 @@ package mctester.common.util;
 
 import mctester.mixin.accessor.GameTestAccessor;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -11,7 +12,6 @@ import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.test.GameTest;
-import net.minecraft.test.StructureTestUtil;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.*;
@@ -22,12 +22,27 @@ import java.util.stream.Stream;
 
 public class GameTestUtil {
     public static BlockBox getTestBlockBox(GameTest gameTest) {
-        return StructureTestUtil.getStructureBlockBox(((GameTestAccessor)gameTest).getStructureBlockBlockEntity());
+        return getTestBlockBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
     }
 
     public static Box getTestBox(GameTest gameTest) {
-        return StructureTestUtil.getStructureBoundingBox(((GameTestAccessor)gameTest).getStructureBlockBlockEntity());
+        return getTestBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
     }
+
+    private static BlockBox getTestBlockBox(StructureBlockBlockEntity structureBlockEntity) {
+        BlockPos blockPos = structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
+        BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
+        BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+        return BlockBox.create(blockPos, blockPos3);
+    }
+
+    private static Box getTestBox(StructureBlockBlockEntity structureBlockEntity) {
+        BlockPos blockPos = structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
+        BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
+        BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+        return new Box(blockPos, blockPos3.add(1, 1, 1));
+    }
+
 
     public static Box transformBox(GameTest gameTest, Box box) {
         BlockPos blockPos = gameTest.getPos();

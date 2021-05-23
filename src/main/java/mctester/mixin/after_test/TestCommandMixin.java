@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TestCommand.class)
 public class TestCommandMixin {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("McTester|TestHandling");
 
     @Inject(at = @At(value = "HEAD"), method = "sendMessage(Lnet/minecraft/server/world/ServerWorld;Ljava/lang/String;Lnet/minecraft/util/Formatting;)V")
     private static void handleTestEnd(ServerWorld world, String message, Formatting formatting, CallbackInfo ci) {

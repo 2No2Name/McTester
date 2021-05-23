@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.Random;
 
 public class McTesterConfig {
-    private static final Logger LOGGER = LogManager.getLogger("McTesterConfig");
+    private static final Logger LOGGER = LogManager.getLogger("McTester|Config");
     private static boolean shouldAutorun;
     //shuffling the test functions leads to the same test not always running in the same position and with the same neighboring tests
     //if a test breaks due to interaction with a neighboring tests, it or the neighboring test should be redesigned

@@ -5,6 +5,7 @@ import mctester.common.copy.PositionedException2;
 import mctester.common.test.exceptions.GameTestAssertException;
 import mctester.common.test.exceptions.PreconditionNotMetException;
 import mctester.common.util.GameTestUtil;
+import mctester.common.util.TestFunctionIdentification;
 import mctester.mixin.accessor.BrainAccessor;
 import mctester.mixin.accessor.GoalSelectorAccessor;
 import mctester.mixin.accessor.MobEntityAccessor;
@@ -175,20 +176,24 @@ public class GameTestHelper {
         mob.setOnGround(true);
         targetPos = GameTestUtil.transformPos(this.gameTest, targetPos);
         Path pathTo = mob.getNavigation().findPathTo(targetPos.getX() + 0.5D, targetPos.getY() + 1, targetPos.getZ() + 0.5D, 0);
-        mob.getNavigation().startMovingAlong(pathTo, 0.5D);
+        mob.getNavigation().startMovingAlong(pathTo, 1D);
     }
 
     public void walkTo(MobEntity mob, double x, double y, double z) {
-        Vec3d pos = GameTestUtil.transformPos(this.gameTest, x, y, z);
-        mob.getNavigation().startMovingTo(pos.x, pos.y, pos.z, 1D);
+        mob.setOnGround(true);
+        Vec3d targetPos = GameTestUtil.transformPos(this.gameTest, x, y, z);
+        Path pathTo = mob.getNavigation().findPathTo(targetPos.getX() + 0.5D, targetPos.getY() + 1, targetPos.getZ() + 0.5D, 0);
+        mob.getNavigation().startMovingAlong(pathTo, 1D);
     }
 
-    public <T extends MobEntity> T spawnWithNoFreeWill(EntityType<T> entityType, int x, int y, int z) {
+    public <T extends Entity> T spawnWithNoFreeWill(EntityType<T> entityType, int x, int y, int z) {
         T entity = spawnEntity(x, y, z, entityType);
 
         //mobs have lots of brain, cut out the selection of tasks and goals
-        Brain<?> brain = entity.getBrain();
-        ((BrainAccessor<?>) brain).getTasks().clear();
+        if (entity instanceof MobEntity) {
+            Brain<?> brain = ((MobEntity) entity).getBrain();
+            ((BrainAccessor<?>) brain).getTasks().clear();
+        }
         ((GoalSelectorAccessor) ((MobEntityAccessor) entity).getTargetSelector()).getGoals().clear();
         ((GoalSelectorAccessor) ((MobEntityAccessor) entity).getGoalSelector()).getGoals().clear();
 
@@ -237,11 +242,39 @@ public class GameTestHelper {
         }
     }
 
-    public <T extends Entity> void succeedWhenEntityPresent(EntityType<T> entityType, int x, int y, int z) {
+    public <T extends Entity> void succeedWhenEntityCollides(EntityType<T> entityType, int x, int y, int z) {
         this.succeedWhen((GameTestHelper helper) ->
                         !GameTestUtil.getEntitiesInBox(
                                 this.gameTest, entityType, new Box(x, y, z, x + 1, y + 1, z + 1)
                         ).isEmpty(),
+                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(x, y, z), helper.currTick)
+        );
+    }
+
+    public <T extends Entity> void succeedWhenEntityCollides(EntityType<T> entityType, Box box) {
+        this.succeedWhen((GameTestHelper helper) ->
+                        !GameTestUtil.getEntitiesInBox(
+                                this.gameTest, entityType, box
+                        ).isEmpty(),
+                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(box.getCenter()), helper.currTick)
+        );
+    }
+
+    public <T extends Entity> void succeedWhenEntityPresent(EntityType<T> entityType, int x, int y, int z) {
+        this.succeedWhen((GameTestHelper helper) -> {
+                    List<T> entitiesInBox = GameTestUtil.getEntitiesInBox(
+                            this.gameTest, entityType, new Box(x, y, z, x + 1, y + 1, z + 1)
+                    );
+                    BlockPos targetPos = GameTestUtil.transformPos(helper.gameTest, x, y, z);
+                    for (int i = entitiesInBox.size() - 1; i >= 0; i--) {
+                        T entity = entitiesInBox.get(i);
+                        BlockPos blockPos = entity.getBlockPos();
+                        if (targetPos.equals(blockPos)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
                 (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(x, y, z), helper.currTick)
         );
     }
@@ -256,6 +289,10 @@ public class GameTestHelper {
 
     public List<Entity> getEntitiesInside() {
         return GameTestUtil.getEntitiesInTestArea(this.gameTest);
+    }
+
+    public int getVariantIndex() {
+        return TestFunctionIdentification.testFunction2VariantIndex.getOrDefault(this.gameTest.getTestFunction(), 0);
     }
 
     public interface GameTestAccess {

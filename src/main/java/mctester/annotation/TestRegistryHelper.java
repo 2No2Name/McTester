@@ -3,6 +3,7 @@ package mctester.annotation;
 import mctester.TestTemplates;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
+import mctester.common.util.TestFunctionIdentification;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
@@ -15,16 +16,20 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestRegistryHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("McTester|TestRegistry");
     public static boolean shouldWarnOnMissingStructureFile = true;
 
     public static void createTestsFromClass(Class<?> clazz) {
-        Arrays.stream(clazz.getDeclaredMethods()).filter(m -> m.getAnnotation(GameTest.class) != null || m.getAnnotation(GameTests.class) != null).forEach(TestRegistryHelper::createTestFromMethod);
+        Arrays.stream(clazz.getDeclaredMethods())
+                .filter(m -> m.getAnnotation(GameTest.class) != null || m.getAnnotation(GameTests.class) != null)
+                .forEach(TestRegistryHelper::createTestFromMethod);
     }
 
     public static void createTemplatedTestsFromFiles() {
@@ -43,7 +48,7 @@ public class TestRegistryHelper {
             String templateName = structureName.substring(0, dotIndex);
             Function<String, Stream<TestConfig>> testInitializer = TestTemplates.TEST_TEMPLATES.get(templateName);
             if (testInitializer != null) {
-                createTestForFile(structureName, templateName, testInitializer);
+                createTestsForTemplatedStructure(structureName, templateName, testInitializer);
             }
         }
     }
@@ -60,10 +65,15 @@ public class TestRegistryHelper {
         }
     }
 
-    public static void createTestForFile(String structureName, String templateName, Function<String, Stream<TestConfig>> testInitializer) {
-        testInitializer.apply(structureName).forEach(
-                testConfig -> registerTest(testConfig.toTestFunction(), templateName)
-        );
+    public static void createTestsForTemplatedStructure(String structureName, String templateName, Function<String, Stream<TestConfig>> testInitializer) {
+        List<TestConfig> apply = testInitializer.apply(structureName).collect(Collectors.toList());
+        for (int i = 0; i < apply.size(); i++) {
+            TestConfig testConfig = apply.get(i);
+            TestFunction testFunction = testConfig.toTestFunction();
+
+            TestFunctionIdentification.registerTestFunctionIdentifier(testFunction, i);
+            registerTest(testFunction, templateName);
+        }
     }
 
     public static void createTest(Method method, GameTest annotation) {
@@ -85,14 +95,14 @@ public class TestRegistryHelper {
             }
         };
         Stream<TestConfig> testConfigs = TestConfig.from(annotation, structurePathName, startupFunction);
-        testConfigs.forEach(testConfig ->
-                registerTest(testConfig.toTestFunction(), TestAnnotationHelper.getGroupName(annotation, method)));
-    }
-
-    public static void createTests(Stream<TestConfig> testConfigs, Function<TestConfig, Stream<TestConfig>> variantCreator, String groupName) {
-        testConfigs.flatMap(variantCreator).forEach(
-                testConfig -> registerTest(testConfig.toTestFunction(), groupName)
-        );
+        List<TestConfig> testConfigList = testConfigs.collect(Collectors.toList());
+        for (TestConfig testConfig : testConfigList) {
+            for (int i = 0; i < annotation.numVariants(); i++) {
+                TestFunction testFunction = testConfig.toTestFunction();
+                TestFunctionIdentification.registerTestFunctionIdentifier(testFunction, i);
+                registerTest(testFunction, TestAnnotationHelper.getGroupName(annotation, method));
+            }
+        }
     }
 
     public static void registerTest(TestFunction testFunction, String className) {

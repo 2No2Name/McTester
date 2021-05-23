@@ -19,7 +19,7 @@ public class Example {
         PERSISTENCE_REQUIRED.putBoolean("PersistenceRequired", true);
     }
 
-    @GameTest(structureName = "cow_on_cactus", groupName = "example")
+    @GameTest
     public static void cowOnCactus(GameTestHelper helper) {
         CowEntity cowEntity = helper.spawnEntity(2, 4, 2, EntityType.COW, PERSISTENCE_REQUIRED);
         helper.succeedWhen(
@@ -29,9 +29,7 @@ public class Example {
     }
 
     @GameTest(
-            structureName = "waterflow1",
-            groupName = "example",
-            rotation = {BlockRotation.CLOCKWISE_90, BlockRotation.CLOCKWISE_180, BlockRotation.COUNTERCLOCKWISE_90, BlockRotation.NONE},
+            rotation = {BlockRotation.NONE, BlockRotation.CLOCKWISE_90, BlockRotation.CLOCKWISE_180, BlockRotation.COUNTERCLOCKWISE_90},
             timeoutTicks = 100, //example: shorter cooldown, fail after 5 seconds of no success
             cooldown = 0 //set a cooldown to allow firing observers etc. to stop before starting the test. We don't need that for waterflow.
     )
@@ -43,7 +41,7 @@ public class Example {
         );
     }
 
-    @GameTest(structureName = "wolf_skeleton_fight", groupName = "example")
+    @GameTest
     public static void wolf_skeleton_fight(GameTestHelper helper) {
         helper.spawnEntity(2, 2, 2, EntityType.SKELETON, PERSISTENCE_REQUIRED);
         helper.spawnEntity(2, 2, 2, EntityType.WOLF, PERSISTENCE_REQUIRED);

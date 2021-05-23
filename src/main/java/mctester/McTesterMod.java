@@ -2,6 +2,7 @@ package mctester;
 
 import mctester.annotation.TestRegistryHelper;
 import mctester.common.util.StructureNBTConverter;
+import mctester.tests.BoxFill;
 import mctester.tests.Example;
 import mctester.tests.Minecarts;
 import mctester.tests.MobAi;
@@ -22,6 +23,7 @@ public class McTesterMod implements ModInitializer {
 			TestRegistryHelper.createTestsFromClass(Example.class);
 			TestRegistryHelper.createTestsFromClass(MobAi.class);
 			TestRegistryHelper.createTestsFromClass(Minecarts.class);
+			TestRegistryHelper.createTestsFromClass(BoxFill.class);
 			TestRegistryHelper.shouldWarnOnMissingStructureFile = tmp;
 		}
 
