@@ -2,7 +2,7 @@ package mctester.mixin.fixes.test_exceptions;
 
 import mctester.common.copy.PositionedException2;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,7 +25,7 @@ public abstract class StructureTestListenerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private static void handleCustomException(GameTest test, Throwable output, CallbackInfo ci, String string, String string2, Throwable throwable) {
+    private static void handleCustomException(GameTestState test, Throwable output, CallbackInfo ci, String string, String string2, Throwable throwable) {
         if (throwable instanceof PositionedException2) {
             PositionedException2 positionedException2 = (PositionedException2) throwable;
             addGameTestMarker(test.getWorld(), positionedException2.getPos(), positionedException2.getDebugMessage());

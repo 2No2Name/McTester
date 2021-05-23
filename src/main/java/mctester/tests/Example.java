@@ -7,13 +7,13 @@ import mctester.common.test.exceptions.GameTestAssertException;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
 public class Example {
-    public static final CompoundTag PERSISTENCE_REQUIRED = new CompoundTag();
+    public static final NbtCompound PERSISTENCE_REQUIRED = new NbtCompound();
 
     static {
         PERSISTENCE_REQUIRED.putBoolean("PersistenceRequired", true);

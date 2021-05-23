@@ -16,8 +16,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.test.GameTest;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.test.GameTestState;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -33,13 +33,13 @@ import java.util.function.*;
 public class GameTestHelper {
     private static final Random RAND = new Random();
 
-    public final GameTest gameTest;
+    public final GameTestState gameTest;
     private final ArrayList<BiConsumer<GameTestHelper, Long>> repeatedActions;
     private final Long2ReferenceOpenHashMap<Consumer<GameTestHelper>> tickActions;
     private final ArrayList<Function<GameTestHelper, RuntimeException>> failReasons;
     public long currTick;
 
-    public GameTestHelper(GameTest gameTest) {
+    public GameTestHelper(GameTestState gameTest) {
         this.gameTest = gameTest;
         if (this.gameTest instanceof GameTestAccess) {
             ((GameTestAccess) this.gameTest).setTickCallback(this::handleTick);
@@ -204,13 +204,13 @@ public class GameTestHelper {
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x + 0.5D, y, z + 0.5D, entity, null);
     }
 
-    public <T extends Entity> T spawnEntity(int x, int y, int z, EntityType<T> entity, CompoundTag tag) {
+    public <T extends Entity> T spawnEntity(int x, int y, int z, EntityType<T> entity, NbtCompound tag) {
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x + 0.5D, y, z + 0.5D, entity, tag);
     }
 
-    public <T extends Entity> T spawnEntity(int x, int y, int z, EntityType<T> entity, CompoundTag... entityTags) {
-        CompoundTag tag = new CompoundTag();
-        for (CompoundTag entityTag : entityTags) {
+    public <T extends Entity> T spawnEntity(int x, int y, int z, EntityType<T> entity, NbtCompound... entityTags) {
+        NbtCompound tag = new NbtCompound();
+        for (NbtCompound entityTag : entityTags) {
             tag.copyFrom(entityTag);
         }
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x + 0.5D, y, z + 0.5D, entity, tag);
@@ -220,13 +220,13 @@ public class GameTestHelper {
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x, y, z, entity, null);
     }
 
-    public <T extends Entity> T spawnEntity(double x, double y, double z, EntityType<T> entity, CompoundTag entityTag) {
+    public <T extends Entity> T spawnEntity(double x, double y, double z, EntityType<T> entity, NbtCompound entityTag) {
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x, y, z, entity, entityTag);
     }
 
-    public <T extends Entity> T spawnEntity(double x, double y, double z, EntityType<T> entity, CompoundTag... entityTags) {
-        CompoundTag tag = new CompoundTag();
-        for (CompoundTag entityTag : entityTags) {
+    public <T extends Entity> T spawnEntity(double x, double y, double z, EntityType<T> entity, NbtCompound... entityTags) {
+        NbtCompound tag = new NbtCompound();
+        for (NbtCompound entityTag : entityTags) {
             tag.copyFrom(entityTag);
         }
         return GameTestUtil.spawnEntityWithTransforms(this.gameTest, x, y, z, entity, tag);

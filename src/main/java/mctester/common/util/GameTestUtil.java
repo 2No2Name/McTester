@@ -7,11 +7,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.*;
@@ -21,11 +21,11 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class GameTestUtil {
-    public static BlockBox getTestBlockBox(GameTest gameTest) {
+    public static BlockBox getTestBlockBox(GameTestState gameTest) {
         return getTestBlockBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
     }
 
-    public static Box getTestBox(GameTest gameTest) {
+    public static Box getTestBox(GameTestState gameTest) {
         return getTestBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
     }
 
@@ -44,7 +44,7 @@ public class GameTestUtil {
     }
 
 
-    public static Box transformBox(GameTest gameTest, Box box) {
+    public static Box transformBox(GameTestState gameTest, Box box) {
         BlockPos blockPos = gameTest.getPos();
         Vec3d corner1 = new Vec3d(box.minX, box.minY, box.minZ);
         Vec3d corner2 = new Vec3d(box.maxX, box.maxY, box.maxZ);
@@ -54,40 +54,40 @@ public class GameTestUtil {
         return new Box(corner1, corner2);
     }
 
-    public static Vec3d transformPos(GameTest gameTest, Vec3d pos) {
+    public static Vec3d transformPos(GameTestState gameTest, Vec3d pos) {
         BlockPos basePos = gameTest.getPos();
         return Structure.transformAround(pos.add(basePos.getX(), basePos.getY(), basePos.getZ()), BlockMirror.NONE, gameTest.getRotation(), basePos);
     }
 
-    public static Vec3d transformPos(GameTest gameTest, double x, double y, double z) {
+    public static Vec3d transformPos(GameTestState gameTest, double x, double y, double z) {
         return transformPos(gameTest, new Vec3d(x, y, z));
     }
 
-    public static BlockPos transformPos(GameTest gameTest, Vec3i pos) {
+    public static BlockPos transformPos(GameTestState gameTest, Vec3i pos) {
         BlockPos blockPos = gameTest.getPos();
         return Structure.transformAround(blockPos.add(pos), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
-    public static BlockPos transformPos(GameTest gameTest, int x, int y, int z) {
+    public static BlockPos transformPos(GameTestState gameTest, int x, int y, int z) {
         BlockPos blockPos = gameTest.getPos();
         return Structure.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
-    public static List<Entity> getEntitiesInTestArea(GameTest e) {
+    public static List<Entity> getEntitiesInTestArea(GameTestState e) {
         return e.getWorld().getOtherEntities(null, GameTestUtil.getTestBox(e));
     }
 
-    public static List<Entity> getEntitiesInBox(GameTest e, Box box) {
+    public static List<Entity> getEntitiesInBox(GameTestState e, Box box) {
         box = transformBox(e, box);
         return e.getWorld().getOtherEntities(null, GameTestUtil.transformBox(e, box));
     }
 
-    public static <T extends Entity> List<T> getEntitiesInBox(GameTest e, EntityType<T> entityType, Box box) {
+    public static <T extends Entity> List<T> getEntitiesInBox(GameTestState e, EntityType<T> entityType, Box box) {
         box = transformBox(e, box);
         return e.getWorld().getEntitiesByType(entityType, box, t -> true);
     }
 
-    public static <T extends Entity> List<T> getEntitiesInBox(GameTest e, EntityType<T> entityType, Box box, Predicate<T> entityPredicate) {
+    public static <T extends Entity> List<T> getEntitiesInBox(GameTestState e, EntityType<T> entityType, Box box, Predicate<T> entityPredicate) {
         box = transformBox(e, box);
         if (entityPredicate == null) {
             entityPredicate = t -> true;
@@ -95,7 +95,7 @@ public class GameTestUtil {
         return e.getWorld().getEntitiesByType(entityType, box, entityPredicate);
     }
 
-    public static <T extends Entity> T spawnEntityWithTransforms(GameTest gameTest, double x, double y, double z, EntityType<T> entityType, CompoundTag entityTag) {
+    public static <T extends Entity> T spawnEntityWithTransforms(GameTestState gameTest, double x, double y, double z, EntityType<T> entityType, NbtCompound entityTag) {
         ServerWorld serverWorld = gameTest.getWorld();
         T entity = entityType.create(serverWorld);
         if (entity == null) {
@@ -106,7 +106,7 @@ public class GameTestUtil {
         }
 
         if (entityTag != null) {
-            CompoundTag newTag = NbtPredicate.entityToNbt(entity).copy().copyFrom(entityTag);
+            NbtCompound newTag = NbtPredicate.entityToNbt(entity).copy().copyFrom(entityTag);
             entity.readNbt(newTag);
         }
 
@@ -134,7 +134,7 @@ public class GameTestUtil {
         return entity;
     }
 
-    public static void setBlockStateWithTransforms(GameTest gameTest, int x, int y, int z, BlockState blockState) {
+    public static void setBlockStateWithTransforms(GameTestState gameTest, int x, int y, int z, BlockState blockState) {
         ServerWorld serverWorld = gameTest.getWorld();
         BlockPos blockPos = gameTest.getPos();
         BlockPos blockPos2 = new BlockPos(x, y, z);
@@ -142,7 +142,7 @@ public class GameTestUtil {
         serverWorld.setBlockState(blockPos3, blockState.rotate(gameTest.getRotation()));
     }
 
-    public static BlockState getBlockStateWithTransforms(GameTest gameTest, int x, int y, int z) {
+    public static BlockState getBlockStateWithTransforms(GameTestState gameTest, int x, int y, int z) {
         ServerWorld serverWorld = gameTest.getWorld();
         BlockPos blockPos = gameTest.getPos();
         BlockPos blockPos2 = new BlockPos(x, y, z);
@@ -150,7 +150,7 @@ public class GameTestUtil {
         return serverWorld.getBlockState(blockPos3).rotate(getInverse(gameTest.getRotation()));
     }
 
-    public static Stream<BlockPos> streamPositions(GameTest gameTest) {
+    public static Stream<BlockPos> streamPositions(GameTestState gameTest) {
         return BlockPos.stream(GameTestUtil.getTestBlockBox(gameTest));
     }
 

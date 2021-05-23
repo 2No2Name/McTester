@@ -1,6 +1,6 @@
 package mctester.mixin.accessor;
 
-import net.minecraft.test.StartupParameter;
+import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,12 +20,15 @@ public interface TestFunctionAccessor {
     @Mutable
     @Accessor("structureName")
     void setStructureName(String structureName);
+
     @Mutable
     @Accessor("required")
     void setRequired(boolean required);
+
     @Mutable
     @Accessor("starter")
-    void setStarter(Consumer<StartupParameter> starter);
+    void setStarter(Consumer<TestContext> starter);
+
     @Mutable
     @Accessor("tickLimit")
     void setTickLimit(int tickLimit);

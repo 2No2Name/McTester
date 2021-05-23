@@ -2,7 +2,7 @@ package mctester.mixin.fixes.function_lookup;
 
 import mctester.common.util.TestFunctionIdentification;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 import net.minecraft.test.TestRunner;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -27,7 +27,7 @@ public class TestRunnerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void addTestFunctionIdentifier(Collection<?> collection, CallbackInfoReturnable<Map<?, ?>> cir, Map<?, ?> map, int i, Box box, Iterator<?> var5, GameTest gameTest, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
+    private void addTestFunctionIdentifier(Collection<?> collection, CallbackInfoReturnable<Map<?, ?>> cir, Map<?, ?> map, int i, Box box, Iterator<?> var5, GameTestState gameTest, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
         TestFunctionIdentification.setMetaData(structureBlockBlockEntity, gameTest.getTestFunction());
     }
 }

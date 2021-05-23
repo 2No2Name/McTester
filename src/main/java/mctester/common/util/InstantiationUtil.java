@@ -1,7 +1,7 @@
 package mctester.common.util;
 
 import mctester.mixin.accessor.TestFunctionAccessor;
-import net.minecraft.test.StartupParameter;
+import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;
 import sun.misc.Unsafe;
@@ -24,7 +24,7 @@ public class InstantiationUtil {
         }
     }
 
-    public static TestFunction createTestFunction(String batchId, String structurePath, String structureName, boolean required, Consumer<StartupParameter> starter, int tickLimit, long duration, BlockRotation field_25306, int repetitions, int requiredSuccessCount) {
+    public static TestFunction createTestFunction(String batchId, String structurePath, String structureName, boolean required, Consumer<TestContext> starter, int tickLimit, long duration, BlockRotation field_25306, int repetitions, int requiredSuccessCount) {
         try {
             TestFunctionAccessor testFunction = (TestFunctionAccessor) theUnsafe.allocateInstance(TestFunction.class);
             testFunction.setBatchId(batchId);

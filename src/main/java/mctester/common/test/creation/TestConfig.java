@@ -3,7 +3,7 @@ package mctester.common.test.creation;
 import mctester.annotation.GameTest;
 import mctester.common.util.InstantiationUtil;
 import mctester.mixin.accessor.StartupParameterAccessor;
-import net.minecraft.test.StartupParameter;
+import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
 import net.minecraft.util.BlockRotation;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class TestConfig {
     private int repetitions;
     private int requiredSuccessCount;
     @NotNull
-    private final Consumer<StartupParameter> starter;
+    private final Consumer<TestContext> starter;
 
 
     public TestConfig(Consumer<GameTestHelper> testStartupFunction) {
