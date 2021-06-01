@@ -2,7 +2,6 @@ package mctester;
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import mctester.annotation.GameTest;
-import mctester.common.copy.PositionedException2;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
 import mctester.common.test.exceptions.GameTestAssertException;
@@ -10,6 +9,9 @@ import mctester.common.util.GameTestUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
+import net.minecraft.structure.Structure;
+import net.minecraft.test.PositionedException;
+import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -62,7 +64,12 @@ public class TestTemplates {
                     return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
                             helper1.gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
                 }),
-                helper1 -> new PositionedException2("Expected powered noteblock on top of an emerald block. For example", emeraldBlockList.get(0), helper1.gameTest, helper1.currTick)
+                helper1 -> {
+                    BlockPos blockPos = helper1.gameTest.getPos();
+                    BlockPos absolutePos = emeraldBlockList.get(0);
+                    BlockPos relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+                    return new PositionedException("Expected powered noteblock on top of an emerald block. For example", absolutePos, relativePos, helper1.currTick);
+                }
         );
     }
 }

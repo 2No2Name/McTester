@@ -16,7 +16,7 @@ public class TestCommandMixin {
             method = "run(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/test/TestSet;)V",
             at = @At(
                     value = "NEW",
-                    target = "net/minecraft/test/GameTest"
+                    target = "net/minecraft/test/GameTestState"
             )
     )
     private static GameTestState fixRotation(TestFunction testFunction, BlockRotation rotation, ServerWorld world) {

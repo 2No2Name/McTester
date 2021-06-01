@@ -1,14 +1,15 @@
 package mctester.tests;
 
 import mctester.annotation.GameTest;
-import mctester.common.copy.PositionedException2;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.exceptions.GameTestAssertException;
+import mctester.common.util.GameTestUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.test.PositionedException;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
@@ -24,7 +25,10 @@ public class Example {
         CowEntity cowEntity = helper.spawnEntity(2, 4, 2, EntityType.COW, PERSISTENCE_REQUIRED);
         helper.succeedWhen(
                 helper1 -> !cowEntity.isAlive(),
-                helper1 -> new PositionedException2("Expected dead cow", helper1.gameTest, new BlockPos(2, 4, 2), helper1.currTick)
+                helper1 -> {
+                    BlockPos relativePos = new BlockPos(2, 4, 2);
+                    return new PositionedException("Expected dead cow", GameTestUtil.transformRelativeToAbsolutePos(helper1.gameTest, relativePos), relativePos, helper1.currTick);
+                }
         );
     }
 
@@ -37,7 +41,10 @@ public class Example {
         helper.setBlockState(4, 3, 2, Blocks.WATER.getDefaultState());
         helper.succeedWhen(
                 helper1 -> helper.getBlockState(2, 2, 2).getFluidState().isIn(FluidTags.WATER),
-                helper1 -> new PositionedException2("Expected water", helper1.gameTest, new BlockPos(2, 2, 2), helper1.currTick)
+                helper1 -> {
+                    BlockPos relativePos = new BlockPos(2, 2, 2);
+                    return new PositionedException("Expected water", GameTestUtil.transformRelativeToAbsolutePos(helper1.gameTest, relativePos), relativePos, helper1.currTick);
+                }
         );
     }
 

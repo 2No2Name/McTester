@@ -28,11 +28,12 @@ public class GameTestMixin implements GameTestHelper.GameTestAccess {
     }
 
     @Inject(
-            method = "method_33315",
+            method = "tickTests()V",
             at = @At(
                     value = "INVOKE",
                     target = "Lit/unimi/dsi/fastutil/objects/Object2LongMap;object2LongEntrySet()Lit/unimi/dsi/fastutil/objects/ObjectSet;",
-                    shift = At.Shift.BEFORE
+                    shift = At.Shift.BEFORE,
+                    remap = false
             )
     )
     private void tickGameTestHelper(CallbackInfo ci) {

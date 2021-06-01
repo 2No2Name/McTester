@@ -1,7 +1,6 @@
 package mctester.common.test.creation;
 
 import mctester.annotation.GameTest;
-import mctester.common.util.InstantiationUtil;
 import mctester.mixin.accessor.StartupParameterAccessor;
 import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
@@ -48,7 +47,24 @@ public class TestConfig {
 
     public TestFunction toTestFunction() {
         //todo fix using structureName twice here! But for some reason it is actually working best like this.
-        return InstantiationUtil.createTestFunction(this.batchId, this.structureName, this.structureName, this.required, this.starter, this.timeout, this.cooldown, this.rotation, this.repetitions, this.requiredSuccessCount);
+        return new TestFunction(this.batchId, this.structureName, this.structureName, this.rotation, this.timeout, this.cooldown, this.required, this.requiredSuccessCount, this.repetitions, this.starter);
+//        try {
+//            TestFunctionAccessor testFunction = (TestFunctionAccessor) theUnsafe.allocateInstance(TestFunction.class);
+//            testFunction.setBatchId(batchId);
+//            testFunction.setStructurePath(structurePath);
+//            testFunction.setStructureName(structureName);
+//            testFunction.setRequired(required);
+//            testFunction.setStarter(starter);
+//            testFunction.setTickLimit(tickLimit);
+//            testFunction.setDuration(duration);
+//            testFunction.setRotation(rotation);
+//            testFunction.setRepetitions(repetitions);
+//            testFunction.setRequiredSuccessCount(requiredSuccessCount);
+//            return (TestFunction) testFunction;
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     public TestConfig batchId(String batchId) {

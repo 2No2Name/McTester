@@ -1,7 +1,6 @@
 package mctester.common.test.creation;
 
 import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
-import mctester.common.copy.PositionedException2;
 import mctester.common.test.exceptions.GameTestAssertException;
 import mctester.common.test.exceptions.PreconditionNotMetException;
 import mctester.common.util.GameTestUtil;
@@ -18,6 +17,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.test.GameTestState;
+import net.minecraft.test.PositionedException;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -174,14 +174,14 @@ public class GameTestHelper {
 
     public void walkTo(MobEntity mob, BlockPos targetPos) {
         mob.setOnGround(true);
-        targetPos = GameTestUtil.transformPos(this.gameTest, targetPos);
+        targetPos = GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, targetPos);
         Path pathTo = mob.getNavigation().findPathTo(targetPos.getX() + 0.5D, targetPos.getY() + 1, targetPos.getZ() + 0.5D, 0);
         mob.getNavigation().startMovingAlong(pathTo, 1D);
     }
 
     public void walkTo(MobEntity mob, double x, double y, double z) {
         mob.setOnGround(true);
-        Vec3d targetPos = GameTestUtil.transformPos(this.gameTest, x, y, z);
+        Vec3d targetPos = GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, x, y, z);
         Path pathTo = mob.getNavigation().findPathTo(targetPos.getX() + 0.5D, targetPos.getY() + 1, targetPos.getZ() + 0.5D, 0);
         mob.getNavigation().startMovingAlong(pathTo, 1D);
     }
@@ -235,10 +235,10 @@ public class GameTestHelper {
     public void pressButton(int x, int y, int z) {
         BlockState blockState = this.getBlockState(x, y, z);
         if (blockState.getBlock() instanceof AbstractButtonBlock) {
-            BlockPos blockPos = GameTestUtil.transformPos(this.gameTest, x, y, z);
+            BlockPos blockPos = GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, x, y, z);
             blockState.onUse(this.gameTest.getWorld(), null, null, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.DOWN, blockPos, false));
         } else {
-            throw new PositionedException2("No pushable button found.", this.gameTest, new BlockPos(x, y, z), this.currTick);
+            throw new PositionedException("No pushable button found.", GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(x, y, z)), new BlockPos(x, y, z), this.currTick);
         }
     }
 
@@ -247,7 +247,7 @@ public class GameTestHelper {
                         !GameTestUtil.getEntitiesInBox(
                                 this.gameTest, entityType, new Box(x, y, z, x + 1, y + 1, z + 1)
                         ).isEmpty(),
-                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(x, y, z), helper.currTick)
+                (GameTestHelper helper) -> new PositionedException("Expected " + entityType.getName().getString(), GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(x, y, z)), new BlockPos(x, y, z), helper.currTick)
         );
     }
 
@@ -256,7 +256,7 @@ public class GameTestHelper {
                         !GameTestUtil.getEntitiesInBox(
                                 this.gameTest, entityType, box
                         ).isEmpty(),
-                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(box.getCenter()), helper.currTick)
+                (GameTestHelper helper) -> new PositionedException("Expected " + entityType.getName().getString(), GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(box.getCenter())), new BlockPos(box.getCenter()), helper.currTick)
         );
     }
 
@@ -265,7 +265,7 @@ public class GameTestHelper {
                     List<T> entitiesInBox = GameTestUtil.getEntitiesInBox(
                             this.gameTest, entityType, new Box(x, y, z, x + 1, y + 1, z + 1)
                     );
-                    BlockPos targetPos = GameTestUtil.transformPos(helper.gameTest, x, y, z);
+                    BlockPos targetPos = GameTestUtil.transformRelativeToAbsolutePos(helper.gameTest, x, y, z);
                     for (int i = entitiesInBox.size() - 1; i >= 0; i--) {
                         T entity = entitiesInBox.get(i);
                         BlockPos blockPos = entity.getBlockPos();
@@ -275,7 +275,7 @@ public class GameTestHelper {
                     }
                     return false;
                 },
-                (GameTestHelper helper) -> new PositionedException2("Expected " + entityType.getName().getString(), helper.gameTest, new BlockPos(x, y, z), helper.currTick)
+                (GameTestHelper helper) -> new PositionedException("Expected " + entityType.getName().getString(), GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(x, y, z)), new BlockPos(x, y, z), helper.currTick)
         );
     }
 

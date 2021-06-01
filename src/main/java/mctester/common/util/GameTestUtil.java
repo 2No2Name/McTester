@@ -54,21 +54,21 @@ public class GameTestUtil {
         return new Box(corner1, corner2);
     }
 
-    public static Vec3d transformPos(GameTestState gameTest, Vec3d pos) {
+    public static Vec3d transformRelativeToAbsolutePos(GameTestState gameTest, Vec3d pos) {
         BlockPos basePos = gameTest.getPos();
         return Structure.transformAround(pos.add(basePos.getX(), basePos.getY(), basePos.getZ()), BlockMirror.NONE, gameTest.getRotation(), basePos);
     }
 
-    public static Vec3d transformPos(GameTestState gameTest, double x, double y, double z) {
-        return transformPos(gameTest, new Vec3d(x, y, z));
+    public static Vec3d transformRelativeToAbsolutePos(GameTestState gameTest, double x, double y, double z) {
+        return transformRelativeToAbsolutePos(gameTest, new Vec3d(x, y, z));
     }
 
-    public static BlockPos transformPos(GameTestState gameTest, Vec3i pos) {
+    public static BlockPos transformRelativeToAbsolutePos(GameTestState gameTest, Vec3i pos) {
         BlockPos blockPos = gameTest.getPos();
         return Structure.transformAround(blockPos.add(pos), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
-    public static BlockPos transformPos(GameTestState gameTest, int x, int y, int z) {
+    public static BlockPos transformRelativeToAbsolutePos(GameTestState gameTest, int x, int y, int z) {
         BlockPos blockPos = gameTest.getPos();
         return Structure.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
@@ -115,21 +115,21 @@ public class GameTestUtil {
         //transform the position so the spawning works
         BlockRotation blockRotation = gameTest.getRotation();
         Vec3d pos3 = Structure.transformAround(pos2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, blockRotation, blockPos);
-        float yaw = entity.yaw;
+        float yaw = entity.getYaw();
         switch (blockRotation) {
             case NONE:
                 break;
             case CLOCKWISE_90:
-                yaw = (entity.yaw + 90f) % 360;
+                yaw = (yaw + 90f) % 360;
                 break;
             case CLOCKWISE_180:
-                yaw = (entity.yaw + 180f) % 360;
+                yaw = (yaw + 180f) % 360;
                 break;
             case COUNTERCLOCKWISE_90:
-                yaw = (entity.yaw - 90f) % 360;
+                yaw = (yaw - 90f) % 360;
                 break;
         }
-        entity.refreshPositionAndAngles(pos3.getX(), pos3.getY(), pos3.getZ(), yaw, entity.pitch);
+        entity.refreshPositionAndAngles(pos3.getX(), pos3.getY(), pos3.getZ(), yaw, entity.getPitch());
         serverWorld.spawnEntity(entity);
         return entity;
     }

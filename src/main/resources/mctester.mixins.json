@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "mctester.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "GameTestMixin",
     "accessor.BrainAccessor",
@@ -10,9 +10,7 @@
     "accessor.GoalSelectorAccessor",
     "accessor.MobEntityAccessor",
     "accessor.StartupParameterAccessor",
-    "accessor.TestFunctionAccessor",
     "after_test.TestCommandMixin",
-    "after_test.crash_exit_code_fix.MinecraftServerMixin",
     "enable_testing.CommandManagerMixin",
     "enable_testing.MinecraftServerMixin",
     "fixes.export.TestCommandMixin",
@@ -20,7 +18,6 @@
     "fixes.function_lookup.TestCommandMixin",
     "fixes.function_lookup.TestRunnerMixin",
     "fixes.rotation.TestCommandMixin",
-    "fixes.test_exceptions.StructureTestListenerMixin",
     "startup.Autostart_MinecraftServerMixin",
     "startup.SharedConstantsMixin"
   ],
