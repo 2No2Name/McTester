@@ -32,11 +32,9 @@ jobs:
       - name: build
         run: ./gradlew build
       - name: run test server
-        if: ${{ runner.os == 'Linux' && matrix.java == '11' }} # Only run test server once
         timeout-minutes: 5
         run: ./gradlew runServer
       - name: capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '11' }} # Only upload artifacts built from LTS java on one OS
         uses: actions/upload-artifact@v2
         with:
           name: Artifacts
