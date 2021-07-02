@@ -39,8 +39,10 @@ See the test [templates file](https://github.com/2No2Name/McTester/blob/master/s
 
 - `test_redstone.`: Replaces all red stained terracotta with redstone blocks in the structure's area (test area)
   when the test is activated. Automatically fails after 20 seconds. Test succeeds if there is a powered noteblock on top
-  of an emerald block in the test area. The emerald block positions are cached at the start of the test, so placing or
-  removing more emerald blocks may break the test success detection.
+  of an emerald block or green/lime wool in the test area. The success block positions are cached at the start of the
+  test, so placing or removing more success condition blocks may break the test success detection. The test can also be
+  failed by powering a noteblock on top of a red wool. The success/failure conditions are checked once per tick, with
+  the test failing when both success and failure are detected in the same tick.
 
 ## Available options
 

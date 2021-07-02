@@ -22,7 +22,7 @@ public class TestTemplates {
     public static final Object2ReferenceOpenHashMap<String, Function<String, Stream<TestConfig>>> TEST_TEMPLATES = new Object2ReferenceOpenHashMap<>();
 
     static {
-        //replaces red terracotta with redstone block as start and succeeds if noteblock on top of emerald block is powered
+        //replaces red terracotta with redstone block as start and succeeds if noteblock on top of emerald block or green/lime wool is powered. Test fails when noteblock on top of red wool is powered
         TEST_TEMPLATES.put("test_redstone", TestTemplates::test_redstone_from_structure);
     }
 
@@ -36,39 +36,65 @@ public class TestTemplates {
         return Stream.of(testConfig);
     }
 
+    private static boolean isSuccessBlock(BlockState blockState) {
+        return blockState.isOf(Blocks.EMERALD_BLOCK) || blockState.isOf(Blocks.GREEN_WOOL) || blockState.isOf(Blocks.LIME_WOOL);
+    }
+
+    private static boolean isFailureBlock(BlockState blockState) {
+        return blockState.isOf(Blocks.RED_WOOL);
+    }
+
     /**
      * A test function that can be used to create tests with a simple redstone interface.
      */
     @GameTest
     public static void test_redstone(GameTestHelper helper) {
-        ArrayList<BlockPos> emeraldBlockList = new ArrayList<>();
+        ArrayList<BlockPos> successBlocks = new ArrayList<>();
+        ArrayList<BlockPos> failureBlocks = new ArrayList<>();
 
-        //Replace all red terracotta with redstone block at the start and fill the emerald block list
+        //Replace all red terracotta with redstone block at the start and fill the condition block lists
         GameTestUtil.streamPositions(helper.gameTest).forEach(blockPos -> {
             BlockState blockState = helper.gameTest.getWorld().getBlockState(blockPos);
             if (blockState.isOf(Blocks.RED_TERRACOTTA)) {
                 helper.gameTest.getWorld().setBlockState(blockPos, Blocks.REDSTONE_BLOCK.getDefaultState());
             }
-            if (blockState.isOf(Blocks.EMERALD_BLOCK)) {
-                emeraldBlockList.add(blockPos.toImmutable());
+            if (isSuccessBlock(blockState)) {
+                successBlocks.add(blockPos.toImmutable());
+            }
+            if (isFailureBlock(blockState)) {
+                failureBlocks.add(blockPos.toImmutable());
             }
         });
-        if (emeraldBlockList.isEmpty()) {
-            throw new GameTestAssertException("Expected emerald blocks anywhere inside the test. test_redstone requires emerald blocks for the success condition");
+        if (successBlocks.isEmpty()) {
+            throw new GameTestAssertException("Expected success condition blocks anywhere inside the test. test_redstone requires green or lime wool or emerald blocks for the success condition");
         }
 
-        //Succeed when any powered note block is on top of an emerald block. Assume the emerald block doesn't move etc.
+        //Succeed when any powered note block is on top of a success condition block. Assume the success condition block doesn't move etc.
         helper.succeedWhen(
-                helper1 -> emeraldBlockList.stream().anyMatch(blockPos -> {
-                    BlockState blockState = helper1.gameTest.getWorld().getBlockState(blockPos.up());
-                    return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
-                            helper1.gameTest.getWorld().getBlockState(blockPos).isOf(Blocks.EMERALD_BLOCK);
-                }),
+                helper1 -> {
+                    //Always check the failure condition blocks before the success conditions. Failed tests throw exceptions.
+                    if (
+                            failureBlocks.stream().anyMatch(blockPos -> {
+                                BlockState blockState = helper1.gameTest.getWorld().getBlockState(blockPos.up());
+                                return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
+                                        isFailureBlock(helper1.gameTest.getWorld().getBlockState(blockPos));
+                            })) {
+                        BlockPos blockPos = helper1.gameTest.getPos();
+                        BlockPos absolutePos = successBlocks.get(0);
+                        BlockPos relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+                        throw new PositionedException("Failure condition was met with powered noteblock on top of a failure condition block", absolutePos, relativePos, helper1.currTick);
+                    }
+                    return successBlocks.stream().anyMatch(blockPos -> {
+                        BlockState blockState = helper1.gameTest.getWorld().getBlockState(blockPos.up());
+                        return blockState.isOf(Blocks.NOTE_BLOCK) && blockState.get(NoteBlock.POWERED) &&
+                                isSuccessBlock(helper1.gameTest.getWorld().getBlockState(blockPos));
+                    });
+                },
                 helper1 -> {
                     BlockPos blockPos = helper1.gameTest.getPos();
-                    BlockPos absolutePos = emeraldBlockList.get(0);
+                    BlockPos absolutePos = successBlocks.get(0);
                     BlockPos relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
-                    return new PositionedException("Expected powered noteblock on top of an emerald block. For example", absolutePos, relativePos, helper1.currTick);
+                    return new PositionedException("Expected powered noteblock on top of an success condition block. For example", absolutePos, relativePos, helper1.currTick);
                 }
         );
     }
