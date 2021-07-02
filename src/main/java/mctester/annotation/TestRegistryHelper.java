@@ -35,20 +35,22 @@ public class TestRegistryHelper {
     public static void createTemplatedTestsFromFiles() {
         String structuresDirectoryName = StructureTestUtil.testStructuresDirectoryName;
         File[] files = new File(structuresDirectoryName).listFiles();
-        for (File file : files) {
-            String fileName = file.getName();
-            if (!file.isFile() || !file.canRead() || !fileName.endsWith(".snbt")) {
-                continue;
-            }
-            String structureName = fileName.substring(0, fileName.length() - ".snbt".length());
-            int dotIndex = structureName.indexOf(".");
-            if (dotIndex < 0) {
-                continue;
-            }
-            String templateName = structureName.substring(0, dotIndex);
-            Function<String, Stream<TestConfig>> testInitializer = TestTemplates.TEST_TEMPLATES.get(templateName);
-            if (testInitializer != null) {
-                createTestsForTemplatedStructure(structureName, templateName, testInitializer);
+        if (files != null) {
+            for (File file : files) {
+                String fileName = file.getName();
+                if (!file.isFile() || !file.canRead() || !fileName.endsWith(".snbt")) {
+                    continue;
+                }
+                String structureName = fileName.substring(0, fileName.length() - ".snbt".length());
+                int dotIndex = structureName.indexOf(".");
+                if (dotIndex < 0) {
+                    continue;
+                }
+                String templateName = structureName.substring(0, dotIndex);
+                Function<String, Stream<TestConfig>> testInitializer = TestTemplates.TEST_TEMPLATES.get(templateName);
+                if (testInitializer != null) {
+                    createTestsForTemplatedStructure(structureName, templateName, testInitializer);
+                }
             }
         }
     }
