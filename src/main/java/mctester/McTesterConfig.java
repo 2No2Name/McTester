@@ -1,9 +1,9 @@
 package mctester;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.Random;
 
 public class McTesterConfig {
-    private static final Logger LOGGER = LogManager.getLogger("McTester|Config");
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static boolean shouldAutorun;
     //shuffling the test functions leads to the same test not always running in the same position and with the same neighboring tests
     //if a test breaks due to interaction with a neighboring tests, it or the neighboring test should be redesigned

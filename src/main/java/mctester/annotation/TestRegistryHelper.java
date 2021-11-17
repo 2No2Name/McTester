@@ -1,5 +1,6 @@
 package mctester.annotation;
 
+import com.mojang.logging.LogUtils;
 import mctester.TestTemplates;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
@@ -7,8 +8,7 @@ import mctester.common.util.TestFunctionIdentification;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestRegistryHelper {
-    private static final Logger LOGGER = LogManager.getLogger("McTester|TestRegistry");
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static boolean shouldWarnOnMissingStructureFile = true;
 
     public static void createTestsFromClass(Class<?> clazz) {

@@ -1,13 +1,13 @@
 package mctester.mixin.after_test;
 
+import com.mojang.logging.LogUtils;
 import mctester.McTesterConfig;
 import net.minecraft.server.command.TestCommand;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TestCommand.class)
 public class TestCommandMixin {
-    private static final Logger LOGGER = LogManager.getLogger("McTester|TestHandling");
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     @Inject(at = @At(value = "HEAD"), method = "sendMessage(Lnet/minecraft/server/world/ServerWorld;Ljava/lang/String;Lnet/minecraft/util/Formatting;)V")
     private static void handleTestEnd(ServerWorld world, String message, Formatting formatting, CallbackInfo ci) {

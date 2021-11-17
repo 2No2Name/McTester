@@ -19,7 +19,7 @@ import java.util.Map;
 @Mixin(TestRunner.class)
 public class TestRunnerMixin {
     @Inject(
-            method = "method_29401",
+            method = "alignTestStructures",
             at = @At(
                     value = "INVOKE_ASSIGN",
                     target = "Lnet/minecraft/test/StructureTestUtil;createStructure(Ljava/lang/String;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/BlockRotation;ILnet/minecraft/server/world/ServerWorld;Z)Lnet/minecraft/block/entity/StructureBlockBlockEntity;",
@@ -27,7 +27,7 @@ public class TestRunnerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void addTestFunctionIdentifier(Collection<?> collection, CallbackInfoReturnable<Map<?, ?>> cir, Map<?, ?> map, int i, Box box, Iterator<?> var5, GameTestState gameTest, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
-        TestFunctionIdentification.setMetaData(structureBlockBlockEntity, gameTest.getTestFunction());
+    private void addTestFunctionIdentifier(Collection<GameTestState> gameTests, CallbackInfoReturnable<Map<GameTestState, BlockPos>> cir, Map map1, int i, Box box, Iterator var5, GameTestState gameTestState, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
+        TestFunctionIdentification.setMetaData(structureBlockBlockEntity, gameTestState.getTestFunction());
     }
 }
