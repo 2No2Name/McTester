@@ -18,10 +18,13 @@ public class McTesterMod implements ModInitializer {
 
 		StructureNBTConverter.convertAllNbtToSnbt();
 
+		if (McTesterConfig.shouldIncludeExampleTemplates()) {
+			TestRegistryHelper.createTestTemplateFromClass(test_redstone_template.class);
+		}
+
 		if (McTesterConfig.shouldIncludeExampleTests()) {
 			boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
 			TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
-			TestRegistryHelper.createTestTemplateFromClass(test_redstone_template.class);
 			TestRegistryHelper.createTestsFromClass(Example.class);
 			TestRegistryHelper.createTestsFromClass(MobAi.class);
 			TestRegistryHelper.createTestsFromClass(Minecarts.class);
