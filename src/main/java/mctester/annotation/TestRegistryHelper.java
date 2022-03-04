@@ -1,7 +1,7 @@
 package mctester.annotation;
 
 import com.mojang.logging.LogUtils;
-import mctester.TestTemplates;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
 import mctester.common.util.TestFunctionIdentification;
@@ -19,12 +19,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TestRegistryHelper {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static boolean shouldWarnOnMissingStructureFile = true;
+    public static final Object2ReferenceOpenHashMap<String, Function<String, Stream<TestConfig>>> TEST_TEMPLATES = new Object2ReferenceOpenHashMap<>();
+
+    public static void createTestTemplateFromClass(Class<?> clazz) {
+        Arrays.stream(clazz.getDeclaredMethods())
+                .filter(m -> m.getAnnotation(GameTestTemplate.class) != null)
+                .forEach(TestRegistryHelper::createTestTemplateFromMethod);
+    }
 
     public static void createTestsFromClass(Class<?> clazz) {
         Arrays.stream(clazz.getDeclaredMethods())
@@ -38,16 +44,14 @@ public class TestRegistryHelper {
         if (files != null) {
             for (File file : files) {
                 String fileName = file.getName();
-                if (!file.isFile() || !file.canRead() || !fileName.endsWith(".snbt")) {
-                    continue;
-                }
+                if (!file.isFile() || !file.canRead() || !fileName.endsWith(".snbt")) continue;
                 String structureName = fileName.substring(0, fileName.length() - ".snbt".length());
                 int dotIndex = structureName.indexOf(".");
                 if (dotIndex < 0) {
                     continue;
                 }
                 String templateName = structureName.substring(0, dotIndex);
-                Function<String, Stream<TestConfig>> testInitializer = TestTemplates.TEST_TEMPLATES.get(templateName);
+                Function<String, Stream<TestConfig>> testInitializer = TEST_TEMPLATES.get(templateName);
                 if (testInitializer != null) {
                     createTestsForTemplatedStructure(structureName, templateName, testInitializer);
                 }
@@ -67,8 +71,21 @@ public class TestRegistryHelper {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public static void createTestTemplateFromMethod(Method method) {
+        GameTestTemplate annotation = method.getAnnotation(GameTestTemplate.class);
+        TEST_TEMPLATES.put(annotation.name(), s -> { //Should prob just pass the method
+            try {
+                return (Stream<TestConfig>) method.invoke(null, s);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                LOGGER.warn("Unable to load test template: " + annotation.name());
+            }
+            return null;
+        });
+    }
+
     public static void createTestsForTemplatedStructure(String structureName, String templateName, Function<String, Stream<TestConfig>> testInitializer) {
-        List<TestConfig> apply = testInitializer.apply(structureName).collect(Collectors.toList());
+        List<TestConfig> apply = testInitializer.apply(structureName).toList();
         for (int i = 0; i < apply.size(); i++) {
             TestConfig testConfig = apply.get(i);
             TestFunction testFunction = testConfig.toTestFunction();
@@ -97,7 +114,7 @@ public class TestRegistryHelper {
             }
         };
         Stream<TestConfig> testConfigs = TestConfig.from(annotation, structurePathName, startupFunction);
-        List<TestConfig> testConfigList = testConfigs.collect(Collectors.toList());
+        List<TestConfig> testConfigList = testConfigs.toList();
         for (TestConfig testConfig : testConfigList) {
             for (int i = 0; i < annotation.numVariants(); i++) {
                 TestFunction testFunction = testConfig.toTestFunction();

@@ -2,6 +2,7 @@ package mctester;
 
 import mctester.annotation.TestRegistryHelper;
 import mctester.common.util.StructureNBTConverter;
+import mctester.templates.test_redstone_template;
 import mctester.tests.BoxFill;
 import mctester.tests.Example;
 import mctester.tests.Minecarts;
@@ -20,6 +21,7 @@ public class McTesterMod implements ModInitializer {
 		if (McTesterConfig.shouldIncludeExampleTests()) {
 			boolean tmp = TestRegistryHelper.shouldWarnOnMissingStructureFile;
 			TestRegistryHelper.shouldWarnOnMissingStructureFile = false;
+			TestRegistryHelper.createTestTemplateFromClass(test_redstone_template.class);
 			TestRegistryHelper.createTestsFromClass(Example.class);
 			TestRegistryHelper.createTestsFromClass(MobAi.class);
 			TestRegistryHelper.createTestsFromClass(Minecarts.class);
