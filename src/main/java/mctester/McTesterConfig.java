@@ -24,6 +24,7 @@ public class McTesterConfig {
     private static long autorunShuffleSeed;
     private static boolean isDevelopment;
     private static boolean includeExampleTests;
+    private static boolean includeExampleTemplates;
 
     static {
         LOGGER.info("Loading default config...");
@@ -35,6 +36,7 @@ public class McTesterConfig {
         shouldShutdownAfterTest = FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
         shouldStayUpAfterFail = false;
         includeExampleTests = true;
+        includeExampleTemplates = true;
 
         ArrayList<String> optionValues = new ArrayList<>();
         optionValues.add("false");
@@ -91,6 +93,10 @@ public class McTesterConfig {
             if (includeExampleTestsProperty != null) {
                 includeExampleTests = optionValueLookup[Math.max(0, optionValues.indexOf(includeExampleTestsProperty))];
             }
+            String includeExampleTemplatesProperty = properties.getProperty("includeExampleTemplates");
+            if (includeExampleTemplatesProperty != null) {
+                includeExampleTemplates = optionValueLookup[Math.max(0, optionValues.indexOf(includeExampleTemplatesProperty))];
+            }
         }
     }
 
@@ -124,5 +130,9 @@ public class McTesterConfig {
 
     public static boolean shouldIncludeExampleTests() {
         return includeExampleTests;
+    }
+
+    public static boolean shouldIncludeExampleTemplates() {
+        return includeExampleTemplates;
     }
 }

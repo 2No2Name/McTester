@@ -1,7 +1,7 @@
-package mctester;
+package mctester.templates;
 
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import mctester.annotation.GameTest;
+import mctester.annotation.GameTestTemplate;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
 import mctester.common.test.exceptions.GameTestAssertException;
@@ -15,19 +15,13 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class TestTemplates {
-    public static final Object2ReferenceOpenHashMap<String, Function<String, Stream<TestConfig>>> TEST_TEMPLATES = new Object2ReferenceOpenHashMap<>();
+public class TestRedstoneTemplate {
 
-    static {
-        //replaces red terracotta with redstone block as start and succeeds if noteblock on top of emerald block or green/lime wool is powered. Test fails when noteblock on top of red wool is powered
-        TEST_TEMPLATES.put("test_redstone", TestTemplates::test_redstone_from_structure);
-    }
-
-    public static Stream<TestConfig> test_redstone_from_structure(String structureName) {
-        TestConfig testConfig = new TestConfig(TestTemplates::test_redstone).structureName(structureName);
+    @GameTestTemplate(name = "test_redstone")
+    public static Stream<TestConfig> testFromStructure(String structureName) {
+        TestConfig testConfig = new TestConfig(TestRedstoneTemplate::test_redstone).structureName(structureName);
         //10 tick delay at the start to avoid accidental success condition activation due to redstone flickering
         testConfig.structurePlaceCooldown(10);
         //todo postprocessing options, e.g. a 2nd dot in the name
@@ -58,12 +52,8 @@ public class TestTemplates {
             if (blockState.isOf(Blocks.RED_TERRACOTTA)) {
                 helper.gameTest.getWorld().setBlockState(blockPos, Blocks.REDSTONE_BLOCK.getDefaultState());
             }
-            if (isSuccessBlock(blockState)) {
-                successBlocks.add(blockPos.toImmutable());
-            }
-            if (isFailureBlock(blockState)) {
-                failureBlocks.add(blockPos.toImmutable());
-            }
+            if (isSuccessBlock(blockState)) successBlocks.add(blockPos.toImmutable());
+            if (isFailureBlock(blockState)) failureBlocks.add(blockPos.toImmutable());
         });
         if (successBlocks.isEmpty()) {
             throw new GameTestAssertException("Expected success condition blocks anywhere inside the test. test_redstone requires green or lime wool or emerald blocks for the success condition");
