@@ -2,7 +2,7 @@ package mctester;
 
 import mctester.annotation.TestRegistryHelper;
 import mctester.common.util.StructureNBTConverter;
-import mctester.templates.test_redstone_template;
+import mctester.templates.TestRedstoneTemplate;
 import mctester.tests.BoxFill;
 import mctester.tests.Example;
 import mctester.tests.Minecarts;
@@ -19,7 +19,7 @@ public class McTesterMod implements ModInitializer {
 		StructureNBTConverter.convertAllNbtToSnbt();
 
 		if (McTesterConfig.shouldIncludeExampleTemplates()) {
-			TestRegistryHelper.createTestTemplateFromClass(test_redstone_template.class);
+			TestRegistryHelper.createTestTemplateFromClass(TestRedstoneTemplate.class);
 		}
 
 		if (McTesterConfig.shouldIncludeExampleTests()) {

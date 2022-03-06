@@ -17,11 +17,11 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-public class test_redstone_template {
+public class TestRedstoneTemplate {
 
     @GameTestTemplate(name = "test_redstone")
     public static Stream<TestConfig> testFromStructure(String structureName) {
-        TestConfig testConfig = new TestConfig(test_redstone_template::test_redstone).structureName(structureName);
+        TestConfig testConfig = new TestConfig(TestRedstoneTemplate::test_redstone).structureName(structureName);
         //10 tick delay at the start to avoid accidental success condition activation due to redstone flickering
         testConfig.structurePlaceCooldown(10);
         //todo postprocessing options, e.g. a 2nd dot in the name
