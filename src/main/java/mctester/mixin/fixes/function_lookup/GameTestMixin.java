@@ -18,7 +18,7 @@ public abstract class GameTestMixin {
             method = "init",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/entity/StructureBlockBlockEntity;setStructureName(Ljava/lang/String;)V"
+                    target = "Lnet/minecraft/block/entity/StructureBlockBlockEntity;setTemplateName(Ljava/lang/String;)V"
             )
     )
     private void addTestFunctionIdentifier(StructureBlockBlockEntity structureBlockBlockEntity, String name) {

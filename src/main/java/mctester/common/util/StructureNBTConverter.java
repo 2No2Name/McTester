@@ -1,5 +1,6 @@
 package mctester.common.util;
 
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.test.StructureTestUtil;
 
@@ -27,7 +28,7 @@ public class StructureNBTConverter {
             }
             String structureName = fileName.substring(0, fileName.length() - ".nbt".length());
 
-            Path path = NbtProvider.convertNbtToSnbt(file.toPath(), structureName, Paths.get(structuresDirectoryName));
+            Path path = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, file.toPath(), structureName, Paths.get(structuresDirectoryName));
             if (path != null) {
                 //delete nbt file after successfully converting to snbt
                 //noinspection ResultOfMethodCallIgnored

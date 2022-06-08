@@ -15,11 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MinecraftServerMixin {
     private boolean systemExit1WithServerThread = false;
 
-    @Inject(method = "runServer",
+    @Inject(method = "runServer()V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/MinecraftServer;setCrashReport(Lnet/minecraft/util/crash/CrashReport;)V",
-                    ordinal = 1
+                    target = "Lnet/minecraft/server/MinecraftServer;setCrashReport(Lnet/minecraft/util/crash/CrashReport;)V"
             )
     )
     private void rememberCrash(CallbackInfo ci) {

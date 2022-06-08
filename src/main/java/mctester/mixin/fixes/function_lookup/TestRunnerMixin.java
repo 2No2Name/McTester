@@ -21,13 +21,13 @@ public class TestRunnerMixin {
     @Inject(
             method = "alignTestStructures",
             at = @At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/test/StructureTestUtil;createStructure(Ljava/lang/String;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/BlockRotation;ILnet/minecraft/server/world/ServerWorld;Z)Lnet/minecraft/block/entity/StructureBlockBlockEntity;",
-                    shift = At.Shift.AFTER
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/test/StructureTestUtil;getStructureBoundingBox(Lnet/minecraft/block/entity/StructureBlockBlockEntity;)Lnet/minecraft/util/math/Box;",
+                    shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void addTestFunctionIdentifier(Collection<GameTestState> gameTests, CallbackInfoReturnable<Map<GameTestState, BlockPos>> cir, Map map1, int i, Box box, Iterator var5, GameTestState gameTestState, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
+    private void addTestFunctionIdentifier(Collection<GameTestState> gameTests, CallbackInfoReturnable<Map<GameTestState, BlockPos>> cir, Map<?, ?> map, int i, Box box, Iterator<?> var5, GameTestState gameTestState, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
         TestFunctionIdentification.setMetaData(structureBlockBlockEntity, gameTestState.getTestFunction());
     }
 }
