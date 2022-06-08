@@ -19,7 +19,7 @@ public class TestFunctionIdentification {
     private static final String IDENTIFIER_SUFFIX = "]";
 
     private static String getIdentifier(TestFunction testFunction, int variantIndex) {
-        return IDENTIFIER_PREFIX + "structurePath=\"" + testFunction.getStructurePath() + "\",mcTesterVariant=\"" + variantIndex + "\"" + ",mcTesterRotation=\"" + testFunction.getRotation().ordinal() + "\"" + IDENTIFIER_SUFFIX;
+        return IDENTIFIER_PREFIX + "structurePath=\"" + testFunction.getTemplatePath() + "\",mcTesterVariant=\"" + variantIndex + "\"" + ",mcTesterRotation=\"" + testFunction.getRotation().ordinal() + "\"" + IDENTIFIER_SUFFIX;
     }
 
     public static void registerTestFunctionIdentifier(TestFunction testFunction, int variantIndex) {

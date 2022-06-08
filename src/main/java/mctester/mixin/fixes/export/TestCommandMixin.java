@@ -15,7 +15,7 @@ public class TestCommandMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/StructureBlockBlockEntity;getStructurePath()Ljava/lang/String;")
     )
     private static String getNamespacedStructurePath(StructureBlockBlockEntity structureBlockBlockEntity) {
-        return structureBlockBlockEntity.getStructureName();
+        return structureBlockBlockEntity.getTemplateName();
     }
 
     @Redirect(

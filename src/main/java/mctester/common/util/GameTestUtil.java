@@ -10,7 +10,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.test.GameTestState;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -32,14 +32,14 @@ public class GameTestUtil {
     private static BlockBox getTestBlockBox(StructureBlockBlockEntity structureBlockEntity) {
         BlockPos blockPos = structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
         BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-        BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+        BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
         return BlockBox.create(blockPos, blockPos3);
     }
 
     private static Box getTestBox(StructureBlockBlockEntity structureBlockEntity) {
         BlockPos blockPos = structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
         BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-        BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+        BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
         return new Box(blockPos, blockPos3.add(1, 1, 1));
     }
 
@@ -49,14 +49,14 @@ public class GameTestUtil {
         Vec3d corner1 = new Vec3d(box.minX, box.minY, box.minZ);
         Vec3d corner2 = new Vec3d(box.maxX, box.maxY, box.maxZ);
 
-        corner1 = Structure.transformAround(corner1.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
-        corner2 = Structure.transformAround(corner2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        corner1 = StructureTemplate.transformAround(corner1.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        corner2 = StructureTemplate.transformAround(corner2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         return new Box(corner1, corner2);
     }
 
     public static Vec3d transformRelativeToAbsolutePos(GameTestState gameTest, Vec3d pos) {
         BlockPos basePos = gameTest.getPos();
-        return Structure.transformAround(pos.add(basePos.getX(), basePos.getY(), basePos.getZ()), BlockMirror.NONE, gameTest.getRotation(), basePos);
+        return StructureTemplate.transformAround(pos.add(basePos.getX(), basePos.getY(), basePos.getZ()), BlockMirror.NONE, gameTest.getRotation(), basePos);
     }
 
     public static Vec3d transformRelativeToAbsolutePos(GameTestState gameTest, double x, double y, double z) {
@@ -65,12 +65,12 @@ public class GameTestUtil {
 
     public static BlockPos transformRelativeToAbsolutePos(GameTestState gameTest, Vec3i pos) {
         BlockPos blockPos = gameTest.getPos();
-        return Structure.transformAround(blockPos.add(pos), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        return StructureTemplate.transformAround(blockPos.add(pos), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
     public static BlockPos transformRelativeToAbsolutePos(GameTestState gameTest, int x, int y, int z) {
         BlockPos blockPos = gameTest.getPos();
-        return Structure.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        return StructureTemplate.transformAround(blockPos.add(x, y, z), BlockMirror.NONE, gameTest.getRotation(), blockPos);
     }
 
     public static List<Entity> getEntitiesInTestArea(GameTestState e) {
@@ -114,7 +114,7 @@ public class GameTestUtil {
         Vec3d pos2 = new Vec3d(x, y, z);
         //transform the position so the spawning works
         BlockRotation blockRotation = gameTest.getRotation();
-        Vec3d pos3 = Structure.transformAround(pos2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, blockRotation, blockPos);
+        Vec3d pos3 = StructureTemplate.transformAround(pos2.add(blockPos.getX(), blockPos.getY(), blockPos.getZ()), BlockMirror.NONE, blockRotation, blockPos);
         float yaw = entity.getYaw();
         switch (blockRotation) {
             case NONE:
@@ -138,7 +138,7 @@ public class GameTestUtil {
         ServerWorld serverWorld = gameTest.getWorld();
         BlockPos blockPos = gameTest.getPos();
         BlockPos blockPos2 = new BlockPos(x, y, z);
-        BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         serverWorld.setBlockState(blockPos3, blockState.rotate(gameTest.getRotation()));
     }
 
@@ -146,7 +146,7 @@ public class GameTestUtil {
         ServerWorld serverWorld = gameTest.getWorld();
         BlockPos blockPos = gameTest.getPos();
         BlockPos blockPos2 = new BlockPos(x, y, z);
-        BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, gameTest.getRotation(), blockPos);
+        BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, gameTest.getRotation(), blockPos);
         return serverWorld.getBlockState(blockPos3).rotate(getInverse(gameTest.getRotation()));
     }
 

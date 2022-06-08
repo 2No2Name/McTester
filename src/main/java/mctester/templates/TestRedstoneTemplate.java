@@ -9,7 +9,7 @@ import mctester.common.util.GameTestUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NoteBlock;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.test.PositionedException;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +71,7 @@ public class TestRedstoneTemplate {
                             })) {
                         BlockPos blockPos = helper1.gameTest.getPos();
                         BlockPos absolutePos = successBlocks.get(0);
-                        BlockPos relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+                        BlockPos relativePos = StructureTemplate.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
                         throw new PositionedException("Failure condition was met with powered noteblock on top of a failure condition block", absolutePos, relativePos, helper1.currTick);
                     }
                     return successBlocks.stream().anyMatch(blockPos -> {
@@ -83,7 +83,7 @@ public class TestRedstoneTemplate {
                 helper1 -> {
                     BlockPos blockPos = helper1.gameTest.getPos();
                     BlockPos absolutePos = successBlocks.get(0);
-                    BlockPos relativePos = Structure.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
+                    BlockPos relativePos = StructureTemplate.transformAround(absolutePos, BlockMirror.NONE, GameTestUtil.getInverse(helper1.gameTest.getRotation()), blockPos).add(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
                     return new PositionedException("Expected powered noteblock on top of an success condition block. For example", absolutePos, relativePos, helper1.currTick);
                 }
         );
