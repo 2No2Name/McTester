@@ -39,7 +39,7 @@ public abstract class Autostart_MinecraftServerMixin {
                     Collections.shuffle((List<?>) testFunctions, random);
                 }
             }
-            this.getCommandManager().execute(this.getCommandSource(), "/test runall");
+            this.getCommandManager().executeWithPrefix(this.getCommandSource(), "/test runall");
         }
     }
 }
