@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.test.GameTestException;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.PositionedException;
 import net.minecraft.util.hit.BlockHitResult;
@@ -125,7 +126,7 @@ public class GameTestHelper {
                                 this.gameTest.fail(null);
                             }
                         } catch (PreconditionNotMetException ignored) {
-                        } catch (GameTestAssertException e) {
+                        } catch (GameTestAssertException | GameTestException e) {
                             this.gameTest.fail(e);
                         }
                     }
@@ -150,7 +151,7 @@ public class GameTestHelper {
                                 this.gameTest.fail(null);
                             }
                         } catch (PreconditionNotMetException ignored) {
-                        } catch (GameTestAssertException e) {
+                        } catch (GameTestAssertException | GameTestException e) {
                             this.gameTest.fail(e);
                         }
                     }
