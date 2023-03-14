@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.test.PositionedException;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;

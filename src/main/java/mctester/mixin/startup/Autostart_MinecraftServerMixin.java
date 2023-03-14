@@ -27,7 +27,7 @@ public abstract class Autostart_MinecraftServerMixin {
 
     @Shadow @Final private static Logger LOGGER;
 
-    @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setFavicon(Lnet/minecraft/server/ServerMetadata;)V"))
+    @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;createMetadata()Lnet/minecraft/server/ServerMetadata;"))
     private void runAllTests(CallbackInfo ci) {
         if (McTesterConfig.shouldAutorun()) {
             if (McTesterConfig.shouldShuffleBeforeAutorun()) {
