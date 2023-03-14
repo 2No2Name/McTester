@@ -8,8 +8,8 @@ import mctester.common.util.TestFunctionIdentification;
 import mctester.mixin.accessor.BrainAccessor;
 import mctester.mixin.accessor.GoalSelectorAccessor;
 import mctester.mixin.accessor.MobEntityAccessor;
-import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ButtonBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
@@ -235,7 +235,7 @@ public class GameTestHelper {
 
     public void pressButton(int x, int y, int z) {
         BlockState blockState = this.getBlockState(x, y, z);
-        if (blockState.getBlock() instanceof AbstractButtonBlock) {
+        if (blockState.getBlock() instanceof ButtonBlock) {
             BlockPos blockPos = GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, x, y, z);
             blockState.onUse(this.gameTest.getWorld(), null, null, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.DOWN, blockPos, false));
         } else {
@@ -257,7 +257,7 @@ public class GameTestHelper {
                         !GameTestUtil.getEntitiesInBox(
                                 this.gameTest, entityType, box
                         ).isEmpty(),
-                (GameTestHelper helper) -> new PositionedException("Expected " + entityType.getName().getString(), GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(box.getCenter())), new BlockPos(box.getCenter()), helper.currTick)
+                (GameTestHelper helper) -> new PositionedException("Expected " + entityType.getName().getString(), GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, BlockPos.ofFloored(box.getCenter())), BlockPos.ofFloored(box.getCenter()), helper.currTick)
         );
     }
 
