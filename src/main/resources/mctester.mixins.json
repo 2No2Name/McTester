@@ -19,6 +19,7 @@
     "fixes.function_lookup.TestCommandMixin",
     "fixes.function_lookup.TestRunnerMixin",
     "fixes.rotation.TestCommandMixin",
+    "fixes.startup_crash.MainMixin",
     "startup.Autostart_MinecraftServerMixin",
     "startup.SharedConstantsMixin"
   ],
