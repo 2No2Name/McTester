@@ -5,7 +5,6 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.TestRunner;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +26,7 @@ public class TestRunnerMixin {
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
-    private void addTestFunctionIdentifier(Collection<GameTestState> gameTests, CallbackInfoReturnable<Map<GameTestState, BlockPos>> cir, Map<?, ?> map, int i, Box box, Iterator<?> var5, GameTestState gameTestState, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
+    private void addTestFunctionIdentifier(Collection<GameTestState> gameTests, CallbackInfoReturnable<Map<GameTestState, BlockPos>> cir, Map<?, ?> map, Iterator<?> var3, GameTestState gameTestState, BlockPos blockPos, StructureBlockBlockEntity structureBlockBlockEntity) {
         TestFunctionIdentification.setMetaData(structureBlockBlockEntity, gameTestState.getTestFunction());
     }
 }
