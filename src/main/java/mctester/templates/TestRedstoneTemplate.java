@@ -1,6 +1,5 @@
 package mctester.templates;
 
-import mctester.annotation.GameTest;
 import mctester.annotation.GameTestTemplate;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.creation.TestConfig;
@@ -23,10 +22,7 @@ public class TestRedstoneTemplate {
     public static Stream<TestConfig> testFromStructure(String structureName) {
         TestConfig testConfig = new TestConfig(TestRedstoneTemplate::test_redstone).structureName(structureName);
         //10 tick delay at the start to avoid accidental success condition activation due to redstone flickering
-        testConfig.structurePlaceCooldown(10);
-        //todo postprocessing options, e.g. a 2nd dot in the name
-        // e.g. "test_redstone.rotate.mytest123" could mean that mytest123 should be rotated freely
-
+        testConfig = testConfig.structurePlaceCooldown(10);
         return Stream.of(testConfig);
     }
 
@@ -41,7 +37,6 @@ public class TestRedstoneTemplate {
     /**
      * A test function that can be used to create tests with a simple redstone interface.
      */
-    @GameTest
     public static void test_redstone(GameTestHelper helper) {
         ArrayList<BlockPos> successBlocks = new ArrayList<>();
         ArrayList<BlockPos> failureBlocks = new ArrayList<>();

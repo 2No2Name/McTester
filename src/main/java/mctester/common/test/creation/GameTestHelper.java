@@ -4,10 +4,8 @@ import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
 import mctester.common.test.exceptions.GameTestAssertException;
 import mctester.common.test.exceptions.PreconditionNotMetException;
 import mctester.common.util.GameTestUtil;
-import mctester.common.util.TestFunctionIdentification;
-import mctester.mixin.accessor.BrainAccessor;
-import mctester.mixin.accessor.GoalSelectorAccessor;
-import mctester.mixin.accessor.MobEntityAccessor;
+import mctester.common.util.TestFunctionWithVariant;
+import mctester.mixin.accessor.*;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.entity.Entity;
@@ -19,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.test.GameTestException;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.PositionedException;
+import net.minecraft.test.TestContext;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -43,11 +42,19 @@ public class GameTestHelper {
     public GameTestHelper(GameTestState gameTest) {
         this.gameTest = gameTest;
         if (this.gameTest instanceof GameTestAccess) {
-            ((GameTestAccess) this.gameTest).setTickCallback(this::handleTick);
+            ((GameTestAccess) this.gameTest).mcTester$setTickCallback(this::handleTick);
         }
         this.repeatedActions = new ArrayList<>();
         this.tickActions = new Long2ReferenceOpenHashMap<>();
         this.failReasons = new ArrayList<>();
+    }
+
+    public static GameTestHelper get(TestContext context) {
+        return ((GameTestHelper.GameTestAccess) ((TestContextAccessor) context).getTest()).mcTester$getGameTestHelper();
+    }
+
+    public int getVariant() {
+        return ((TestFunctionWithVariant)this.gameTest.getTestFunction()).mcTester$getVariant();
     }
 
     private void handleTick(long tick) {
@@ -167,7 +174,7 @@ public class GameTestHelper {
     }
 
     public <T extends Entity> void assertEntityPresent(EntityType<T> entityType, BlockPos targetPos) {
-        List<T> entitiesInBox = GameTestUtil.getEntitiesInBox(this.gameTest, entityType, new Box(targetPos, targetPos.add(1, 1, 1)));
+        List<T> entitiesInBox = GameTestUtil.getEntitiesInBox(this.gameTest, entityType, Box.enclosing(targetPos, targetPos));
         if (entitiesInBox.isEmpty()) {
             throw PreconditionNotMetException.INSTANCE; //hack to get the same behavior as in the video (https://www.youtube.com/watch?v=vXaWOJTCYNg (11:15))
         }
@@ -292,13 +299,9 @@ public class GameTestHelper {
         return GameTestUtil.getEntitiesInTestArea(this.gameTest);
     }
 
-    public int getVariantIndex() {
-        return TestFunctionIdentification.testFunction2VariantIndex.getOrDefault(this.gameTest.getTestFunction(), 0);
-    }
-
     public interface GameTestAccess {
-        GameTestHelper getGameTestHelper();
+        GameTestHelper mcTester$getGameTestHelper();
 
-        void setTickCallback(LongConsumer handler);
+        void mcTester$setTickCallback(LongConsumer handler);
     }
 }

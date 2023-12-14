@@ -1,22 +1,26 @@
 package mctester.tests;
 
-import mctester.annotation.GameTest;
+import mctester.annotation.GameTestExtra;
 import mctester.common.test.creation.GameTestHelper;
 import mctester.common.test.exceptions.GameTestAssertException;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.test.GameTest;
+import net.minecraft.test.TestContext;
 import net.minecraft.util.math.BlockPos;
 
 import static net.minecraft.entity.EntityType.*;
 
 public class MobAi {
     private static final EntityType<?>[] MOB_TYPES = {VILLAGER, PIG, CAVE_SPIDER, CREEPER};
-    private static final int NUM_MOB_TYPES = 4;
 
-    @GameTest(timeoutTicks = 200, required = false, numVariants = NUM_MOB_TYPES)
-    public static void fire_maze(GameTestHelper helper) {
+    @GameTest(tickLimit = 200, required = false, templateName = "fire_maze")
+    @GameTestExtra(variants = 4)
+    public static void fire_maze(TestContext context) {
+        GameTestHelper helper = GameTestHelper.get(context);
+        int variant = helper.getVariant();
         //noinspection unchecked
-        EntityType<? extends MobEntity> entityType = (EntityType<? extends MobEntity>) MOB_TYPES[helper.getVariantIndex()];
+        EntityType<? extends MobEntity> entityType = (EntityType<? extends MobEntity>) MOB_TYPES[variant];
         MobEntity mob = helper.spawnWithNoFreeWill(entityType, 1, 2, 1);
 
         final BlockPos targetPos = new BlockPos(10, 2, 5);

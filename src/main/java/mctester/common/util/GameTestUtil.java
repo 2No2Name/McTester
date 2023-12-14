@@ -40,7 +40,7 @@ public class GameTestUtil {
         BlockPos blockPos = structureBlockEntity.getPos().add(structureBlockEntity.getOffset());
         BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
         BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
-        return new Box(blockPos, blockPos3.add(1, 1, 1));
+        return Box.enclosing(blockPos, blockPos3);
     }
 
 

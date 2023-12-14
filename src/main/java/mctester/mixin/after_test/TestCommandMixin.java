@@ -9,12 +9,14 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TestCommand.class)
 public class TestCommandMixin {
+    @Unique
     private static final Logger LOGGER = LogUtils.getLogger();
 
     @Inject(at = @At(value = "HEAD"), method = "sendMessage(Lnet/minecraft/server/world/ServerWorld;Ljava/lang/String;Lnet/minecraft/util/Formatting;)V")
@@ -33,6 +35,7 @@ public class TestCommandMixin {
         }
     }
 
+    @Unique
     private static void intentionallyCrashServerDueToFailedTests() {
         throw new CrashException(new CrashReport("Crashing due to failed tests. This can be disabled in the mctester config.", new Throwable()));
     }

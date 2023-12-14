@@ -4,6 +4,7 @@ import mctester.common.test.creation.GameTestHelper;
 import net.minecraft.test.GameTestState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -12,18 +13,20 @@ import java.util.function.LongConsumer;
 
 @Mixin(GameTestState.class)
 public class GameTestMixin implements GameTestHelper.GameTestAccess {
+    @Unique
     private final GameTestHelper gameTestHelper = new GameTestHelper((GameTestState) (Object) this);
     @Shadow
     private long tick;
+    @Unique
     private LongConsumer tickCallback;
 
     @Override
-    public GameTestHelper getGameTestHelper() {
+    public GameTestHelper mcTester$getGameTestHelper() {
         return this.gameTestHelper;
     }
 
     @Override
-    public void setTickCallback(LongConsumer handler) {
+    public void mcTester$setTickCallback(LongConsumer handler) {
         this.tickCallback = handler;
     }
 
