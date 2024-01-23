@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class TestCommandMixin {
 
     @Redirect(
-            method = "run(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/test/TestSet;Z)V",
+            method = "find",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/block/entity/StructureBlockBlockEntity;getMetadata()Ljava/lang/String;"

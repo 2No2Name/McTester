@@ -1,7 +1,6 @@
 package mctester.common.test.creation;
 
 import mctester.mixin.accessor.TestContextAccessor;
-import mctester.mixin.accessor.TestFunctionAccessor;
 import mctester.common.util.TestFunctionWithVariant;
 import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
@@ -35,16 +34,16 @@ public class TestConfig {
 
     public static TestConfig from(TestFunction testFunction) {
         TestConfig testConfig = new TestConfig();
-        testConfig.batchId = testFunction.getBatchId();
-        testConfig.structurePath = testFunction.getTemplatePath();
-        testConfig.structureName = testFunction.getTemplateName();
-        testConfig.cooldown = testFunction.getDuration();
-        testConfig.timeout = testFunction.getTickLimit();
-        testConfig.required = testFunction.isRequired();
-        testConfig.rotation = testFunction.getRotation();
-        testConfig.repetitions = testFunction.getMaxAttempts();
-        testConfig.requiredSuccessCount = testFunction.getRequiredSuccesses();
-        testConfig.starter = ((TestFunctionAccessor) testFunction).getStarter();
+        testConfig.batchId = testFunction.batchId();
+        testConfig.structurePath = testFunction.templatePath();
+        testConfig.structureName = testFunction.templateName();
+        testConfig.cooldown = testFunction.setupTicks();
+        testConfig.timeout = testFunction.tickLimit();
+        testConfig.required = testFunction.required();
+        testConfig.rotation = testFunction.rotation();
+        testConfig.repetitions = testFunction.maxAttempts();
+        testConfig.requiredSuccessCount = testFunction.requiredSuccesses();
+        testConfig.starter = testFunction.starter();
         return testConfig;
     }
 
