@@ -18,9 +18,10 @@ public class TestConfig {
     private int timeout = 400; //time after which the test automatically fails
     private boolean required = true;
     private BlockRotation rotation = BlockRotation.NONE;
-    private int repetitions;
-    private int requiredSuccessCount;
-    
+    private boolean manualOnly = false;
+    private int repetitions = 1;
+    private int requiredSuccessCount = 1;
+    private boolean skyAccess = false;
     private Consumer<TestContext> starter;
 
     private int variant;
@@ -41,14 +42,16 @@ public class TestConfig {
         testConfig.timeout = testFunction.tickLimit();
         testConfig.required = testFunction.required();
         testConfig.rotation = testFunction.rotation();
+        testConfig.manualOnly = testFunction.manualOnly();
         testConfig.repetitions = testFunction.maxAttempts();
         testConfig.requiredSuccessCount = testFunction.requiredSuccesses();
+        testConfig.skyAccess = testFunction.skyAccess();
         testConfig.starter = testFunction.starter();
         return testConfig;
     }
 
     public TestFunction toTestFunction() {
-        TestFunction testFunction = new TestFunction(this.batchId, this.structurePath, this.structureName, this.rotation, this.timeout, this.cooldown, this.required, this.requiredSuccessCount, this.repetitions, this.starter);
+        TestFunction testFunction = new TestFunction(this.batchId, this.structurePath, this.structureName, this.rotation, this.timeout, this.cooldown, this.required, this.manualOnly, this.requiredSuccessCount, this.repetitions, this.skyAccess, this.starter);
         ((TestFunctionWithVariant) testFunction).mcTester$setVariant(this.variant);
         return testFunction;
     }
@@ -84,6 +87,11 @@ public class TestConfig {
         return this;
     }
 
+    public TestConfig manualOnly(boolean manualOnly) {
+        this.manualOnly = manualOnly;
+        return this;
+    }
+
     public TestConfig requiredSuccessCount(int requiredSuccessCount) {
         this.requiredSuccessCount = requiredSuccessCount;
         return this;
@@ -91,6 +99,11 @@ public class TestConfig {
 
     public TestConfig repetitions(int repetitions) {
         this.repetitions = repetitions;
+        return this;
+    }
+
+    public TestConfig skyAccess(boolean skyAccess) {
+        this.skyAccess = skyAccess;
         return this;
     }
 
