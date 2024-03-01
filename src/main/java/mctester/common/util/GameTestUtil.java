@@ -102,7 +102,7 @@ public class GameTestUtil {
             throw new IllegalStateException("Could not create entity of Type " + entityType);
         }
         if (entity instanceof MobEntity) {
-            ((MobEntity) entity).initialize(serverWorld, serverWorld.getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
+            ((MobEntity) entity).initialize(serverWorld, serverWorld.getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null);
         }
 
         if (entityTag != null) {

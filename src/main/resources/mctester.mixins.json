@@ -10,7 +10,6 @@
     "accessor.GoalSelectorAccessor",
     "accessor.MobEntityAccessor",
     "accessor.TestContextAccessor",
-    "accessor.TestFunctionAccessor",
     "after_test.TestCommandMixin",
     "after_test.crash_exit_code_fix.MinecraftServerMixin",
     "enable_testing.ArgumentTypesMixin",

@@ -68,7 +68,7 @@ public class GameTestHelper {
                 gameTestHelperReferenceLongConsumer.accept(this, tick);
             }
         }
-        if (!this.gameTest.isCompleted() && this.gameTest.getTestFunction().getTickLimit() <= tick) {
+        if (!this.gameTest.isCompleted() && this.gameTest.getTestFunction().tickLimit() <= tick) {
             this.handleTimeout();
         }
     }
@@ -244,7 +244,7 @@ public class GameTestHelper {
         BlockState blockState = this.getBlockState(x, y, z);
         if (blockState.getBlock() instanceof ButtonBlock) {
             BlockPos blockPos = GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, x, y, z);
-            blockState.onUse(this.gameTest.getWorld(), null, null, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.DOWN, blockPos, false));
+            blockState.onUse(this.gameTest.getWorld(), null, new BlockHitResult(new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()), Direction.DOWN, blockPos, false));
         } else {
             throw new PositionedException("No pushable button found.", GameTestUtil.transformRelativeToAbsolutePos(this.gameTest, new BlockPos(x, y, z)), new BlockPos(x, y, z), this.currTick);
         }

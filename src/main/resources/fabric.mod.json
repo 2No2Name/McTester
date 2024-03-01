@@ -14,7 +14,7 @@
   },
 
   "icon": "assets/mctester/icon.png",
-
+  "accessWidener" : "mctester.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
