@@ -1,7 +1,6 @@
 package mctester.common.test.creation;
 
 import mctester.mixin.accessor.TestContextAccessor;
-import mctester.mixin.accessor.TestFunctionAccessor;
 import mctester.common.util.TestFunctionWithVariant;
 import net.minecraft.test.TestContext;
 import net.minecraft.test.TestFunction;
@@ -19,12 +18,14 @@ public class TestConfig {
     private int timeout = 400; //time after which the test automatically fails
     private boolean required = true;
     private BlockRotation rotation = BlockRotation.NONE;
-    private int repetitions;
-    private int requiredSuccessCount;
+    private int maxAttempts;
+    private int requiredSuccesses;
     
     private Consumer<TestContext> starter;
 
     private int variant;
+    private boolean manualOnly;
+    private boolean skyAccess;
 
 
     public TestConfig(@NotNull Consumer<GameTestHelper> starter) {
@@ -35,22 +36,24 @@ public class TestConfig {
 
     public static TestConfig from(TestFunction testFunction) {
         TestConfig testConfig = new TestConfig();
-        testConfig.batchId = testFunction.getBatchId();
-        testConfig.structurePath = testFunction.getTemplatePath();
-        testConfig.structureName = testFunction.getTemplateName();
-        testConfig.cooldown = testFunction.getDuration();
-        testConfig.timeout = testFunction.getTickLimit();
-        testConfig.required = testFunction.isRequired();
-        testConfig.rotation = testFunction.getRotation();
-        testConfig.repetitions = testFunction.getMaxAttempts();
-        testConfig.requiredSuccessCount = testFunction.getRequiredSuccesses();
-        testConfig.starter = ((TestFunctionAccessor) testFunction).getStarter();
+        testConfig.batchId = testFunction.batchId();
+        testConfig.structurePath = testFunction.templatePath();
+        testConfig.structureName = testFunction.templateName();
+        testConfig.rotation = testFunction.rotation();
+        testConfig.timeout = testFunction.tickLimit();
+        testConfig.cooldown = testFunction.setupTicks();
+        testConfig.required = testFunction.required();
+        testConfig.manualOnly = testFunction.manualOnly();
+        testConfig.maxAttempts = testFunction.maxAttempts();
+        testConfig.requiredSuccesses = testFunction.requiredSuccesses();
+        testConfig.skyAccess = testFunction.skyAccess();
+        testConfig.starter = testFunction.starter();
         return testConfig;
     }
 
     public TestFunction toTestFunction() {
-        TestFunction testFunction = new TestFunction(this.batchId, this.structurePath, this.structureName, this.rotation, this.timeout, this.cooldown, this.required, this.requiredSuccessCount, this.repetitions, this.starter);
-        ((TestFunctionWithVariant) testFunction).mcTester$setVariant(this.variant);
+        TestFunction testFunction = new TestFunction(this.batchId, this.structurePath, this.structureName, this.rotation, this.timeout, this.cooldown, this.required, this.manualOnly, this.maxAttempts, this.requiredSuccesses, this.skyAccess , this.starter);
+        ((TestFunctionWithVariant) (Object) testFunction).mcTester$setVariant(this.variant);
         return testFunction;
     }
 
@@ -86,12 +89,12 @@ public class TestConfig {
     }
 
     public TestConfig requiredSuccessCount(int requiredSuccessCount) {
-        this.requiredSuccessCount = requiredSuccessCount;
+        this.requiredSuccesses = requiredSuccessCount;
         return this;
     }
 
     public TestConfig repetitions(int repetitions) {
-        this.repetitions = repetitions;
+        this.maxAttempts = repetitions;
         return this;
     }
 
