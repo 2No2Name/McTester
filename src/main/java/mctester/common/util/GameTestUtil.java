@@ -1,6 +1,6 @@
 package mctester.common.util;
 
-import mctester.mixin.accessor.GameTestAccessor;
+import mctester.mixin.accessor.GameTestStateAccessor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.entity.Entity;
@@ -22,11 +22,11 @@ import java.util.stream.Stream;
 
 public class GameTestUtil {
     public static BlockBox getTestBlockBox(GameTestState gameTest) {
-        return getTestBlockBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
+        return getTestBlockBox(gameTest.getStructureBlockBlockEntity());
     }
 
     public static Box getTestBox(GameTestState gameTest) {
-        return getTestBox(((GameTestAccessor) gameTest).getStructureBlockBlockEntity());
+        return getTestBox(gameTest.getStructureBlockBlockEntity());
     }
 
     private static BlockBox getTestBlockBox(StructureBlockBlockEntity structureBlockEntity) {

@@ -102,4 +102,14 @@ public class TestConfig {
         this.variant = variant;
         return this;
     }
+
+    public TestConfig manualOnly(boolean manualOnly) {
+        this.manualOnly = manualOnly;
+        return this;
+    }
+
+    public TestConfig skyAccess(boolean skyAccess) {
+        this.skyAccess = skyAccess;
+        return this;
+    }
 }

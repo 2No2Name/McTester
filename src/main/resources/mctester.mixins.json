@@ -4,9 +4,9 @@
   "package": "mctester.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "GameTestMixin",
+    "GameTestStateMixin",
     "accessor.BrainAccessor",
-    "accessor.GameTestAccessor",
+    "accessor.GameTestStateAccessor",
     "accessor.GoalSelectorAccessor",
     "accessor.MobEntityAccessor",
     "accessor.TestContextAccessor",
