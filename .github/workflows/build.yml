@@ -12,9 +12,9 @@ jobs:
       matrix:
         # Use these Java versions
         java: [
-            17  # Minimum supported by Minecraft
+            21  # Minimum supported by Minecraft
         ]
-        os: [ ubuntu-latest ] # only run on linux as we expect no difference by platform anyways
+        os: [ ubuntu-latest ] # only run on linux as we expect no difference by platform anyway
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout repository
