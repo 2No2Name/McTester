@@ -17,6 +17,7 @@
     "enable_testing.CommandManagerMixin",
     "enable_testing.MinecraftServerMixin",
     "enable_testing.StructureTemplateManagerMixin",
+    "fixes.area_clearing.StructureTestUtilMixin",
     "fixes.function_lookup.TestCommandMixin",
     "fixes.startup_crash.MainMixin",
     "startup.Autostart_MinecraftServerMixin",
